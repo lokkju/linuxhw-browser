@@ -252,7 +252,7 @@ export class EdidBrowser extends LitElement {
       if (response.ok) {
         const manifest = await response.json();
         this._manifest = {
-          totalCount: manifest?.totalCount || manifest?.total_count,
+          totalCount: manifest?.totalCount || manifest?.total_entries,
           version: manifest?.version,
         };
       }
