@@ -23,10 +23,10 @@ export class EdidBrowser extends LitElement {
     :host {
       display: flex;
       flex-direction: column;
-      width: 100%;
+      width: 1000px;
       height: 100%;
       min-height: 0;
-      max-width: 1200px;
+      max-width: 100%;
       margin: 0 auto;
       background: var(--color-bg, #1a1a2e);
       box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
@@ -80,13 +80,14 @@ export class EdidBrowser extends LitElement {
     }
 
     :host([layout="wide"]) .selector-section {
-      width: 450px;
+      width: 500px;
       flex-shrink: 0;
       border-right: 1px solid var(--color-border, #2a2a4e);
     }
 
     :host([layout="wide"]) .detail-section {
-      flex: 1 1 auto;
+      width: 500px;
+      flex-shrink: 0;
     }
 
     /* Mobile layout: slide between screens */
@@ -126,15 +127,15 @@ export class EdidBrowser extends LitElement {
     .selector-section {
       overflow: hidden;
       background: var(--color-bg, #1a1a2e);
-      width: 450px;
+      width: 500px;
       flex-shrink: 0;
     }
 
     .detail-section {
       overflow: hidden;
       background: var(--color-surface, #16213e);
-      flex: 1 1 auto;
-      width: 0;
+      width: 500px;
+      flex-shrink: 0;
     }
 
     .status-bar {
