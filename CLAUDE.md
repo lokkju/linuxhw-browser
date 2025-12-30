@@ -38,7 +38,7 @@ Reads RoaringBuckets format from `data-base-url`:
 - `metadata/vendors.idx`, `products.idx`, etc. - Search indexes
 - `manifest.json` - Dataset metadata
 
-See [linuxhw-dataset ROARING_BUCKETS.md](https://github.com/lokkju/linuxhw-dataset/blob/main/docs/ROARING_BUCKETS.md) for format details.
+See [linuxhw-datasets ROARING_BUCKETS.md](https://github.com/lokkju/linuxhw-datasets/blob/main/docs/ROARING_BUCKETS.md) for format details.
 
 ## Key Components
 

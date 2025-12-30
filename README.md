@@ -1,6 +1,6 @@
 # LinuxHW Browser
 
-A web-based browser for exploring EDID (Extended Display Identification Data) from the [LinuxHW Dataset](https://github.com/lokkju/linuxhw-dataset).
+A web-based browser for exploring EDID (Extended Display Identification Data) from the [LinuxHW Dataset](https://github.com/lokkju/linuxhw-datasets).
 
 ## Features
 
@@ -39,7 +39,7 @@ The browser reads RoaringBuckets format files from a data directory. Configure t
 <edid-browser data-base-url="./data/"></edid-browser>
 ```
 
-Generate data files using [linuxhw-dataset](https://github.com/lokkju/linuxhw-dataset):
+Generate data files using [linuxhw-datasets](https://github.com/lokkju/linuxhw-datasets):
 ```bash
 uv run edid-build generate
 ```
@@ -73,7 +73,7 @@ linuxhw-browser/
 
 ## Related Projects
 
-- [linuxhw-dataset](https://github.com/lokkju/linuxhw-dataset) - Dataset generation and DuckLake storage
+- [linuxhw-datasets](https://github.com/lokkju/linuxhw-datasets) - Dataset generation and DuckLake storage
 - [linuxhw/EDID](https://github.com/linuxhw/EDID) - Original EDID collection
 
 ## License
