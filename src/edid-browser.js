@@ -191,6 +191,20 @@ export class EdidBrowser extends LitElement {
       color: var(--color-text-muted, #666);
       font-size: 0.625rem;
     }
+
+    .status-source a {
+      color: var(--color-text-muted, #888);
+      text-decoration: none;
+    }
+
+    .status-source a:hover {
+      color: var(--color-accent, #e94560);
+      text-decoration: underline;
+    }
+
+    .version-date {
+      color: var(--color-text-muted, #666);
+    }
   `;
 
   constructor() {
@@ -241,9 +255,11 @@ export class EdidBrowser extends LitElement {
       const response = await fetch(`${this.baseUrl}manifest.json`);
       if (response.ok) {
         const manifest = await response.json();
-        if (manifest?.upstream) {
-          this._upstream = manifest.upstream;
-        }
+        this._upstream = {
+          commit: manifest?.upstream?.commit,
+          date: manifest?.upstream?.date,
+          datasetsVersion: manifest?.version || manifest?.datasetsVersion,
+        };
       }
     } catch (err) {
       console.warn('Failed to load manifest:', err);
@@ -286,10 +302,25 @@ export class EdidBrowser extends LitElement {
 
   _renderUpstreamInfo() {
     if (!this._upstream) {
-      return 'Powered by linuxhw/EDID';
+      return html`Data: <a href="https://github.com/linuxhw/EDID" target="_blank">linuxhw/EDID</a>`;
     }
-    const { commit, date } = this._upstream;
-    return `Powered by linuxhw/EDID rev ${commit} @ ${date}`;
+    const { commit, date, datasetsVersion } = this._upstream;
+    const shortCommit = commit ? commit.slice(0, 7) : '';
+    const parts = [];
+
+    if (shortCommit) {
+      parts.push(html`EDID: <a href="https://github.com/linuxhw/EDID/commit/${commit}" target="_blank">${shortCommit}</a>`);
+    }
+    if (date) {
+      parts.push(html`<span class="version-date">${date}</span>`);
+    }
+    if (datasetsVersion) {
+      parts.push(html`datasets: <a href="https://github.com/lokkju/linuxhw-datasets" target="_blank">v${datasetsVersion}</a>`);
+    }
+
+    return parts.length > 0
+      ? html`${parts.map((p, i) => html`${i > 0 ? ' · ' : ''}${p}`)}`
+      : html`Data: <a href="https://github.com/linuxhw/EDID" target="_blank">linuxhw/EDID</a>`;
   }
 
   render() {
@@ -297,7 +328,7 @@ export class EdidBrowser extends LitElement {
       <div class="header">
         <h1>EDID Browser</h1>
         <span class="count">141,753 monitors</span>
-        <a href="https://github.com/lokkju/edid-dataset" target="_blank" class="project-link">lokkju/edid-dataset</a>
+        <a href="https://github.com/lokkju/linuxhw-datasets" target="_blank" class="project-link">linuxhw-datasets</a>
       </div>
       <div class="main-content">
         <div class="selector-section">
