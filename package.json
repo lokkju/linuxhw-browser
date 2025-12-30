@@ -21,7 +21,8 @@
     "./results-table.js": "./src/results-table.js"
   },
   "files": [
-    "src/",
+    "src/*.js",
+    "!src/edid-reader-original.js",
     "custom-elements.json",
     "README.md",
     "LICENSE",

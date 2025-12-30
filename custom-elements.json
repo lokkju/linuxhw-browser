@@ -864,12 +864,6 @@
     },
     {
       "kind": "javascript-module",
-      "path": "src/edid-reader-original.js",
-      "declarations": [],
-      "exports": []
-    },
-    {
-      "kind": "javascript-module",
       "path": "src/edid-selector.js",
       "declarations": [
         {

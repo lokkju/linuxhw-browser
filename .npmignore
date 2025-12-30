@@ -1,0 +1,8 @@
+# Exclude reference/original files
+src/edid-reader-original.js
+
+# Development files
+.beads/
+*.md
+!README.md
+test-*.mjs
