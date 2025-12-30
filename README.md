@@ -33,7 +33,7 @@ Or use via CDN:
   import 'linuxhw-browser';
 </script>
 
-<edid-browser data-base-url="https://raw.githubusercontent.com/lokkju/linuxhw-datasets/main/data/"></edid-browser>
+<edid-browser data-base-url="https://raw.githubusercontent.com/lokkju/linuxhw-datasets/main/data/roaringbuckets/"></edid-browser>
 ```
 
 ### Standalone EDID Viewer
@@ -110,11 +110,7 @@ Then open http://localhost:8080 in your browser.
 
 ## Data Format
 
-The browser reads RoaringBuckets format files. Generate data using [linuxhw-datasets](https://github.com/lokkju/linuxhw-datasets):
-
-```bash
-uv run edid-build generate
-```
+The browser reads RoaringBuckets format files. If you'd like to self-host, you may generate or download data using [linuxhw-datasets](https://github.com/lokkju/linuxhw-datasets):
 
 ## Browser Support
 

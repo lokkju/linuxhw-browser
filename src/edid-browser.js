@@ -16,7 +16,7 @@ export class EdidBrowser extends LitElement {
     _selectedEdid: { type: Object, state: true },
     _layoutMode: { type: String, state: true },
     _showDetail: { type: Boolean, state: true },
-    _upstream: { type: Object, state: true },
+    _manifest: { type: Object, state: true },
   };
 
   static styles = css`
@@ -201,21 +201,17 @@ export class EdidBrowser extends LitElement {
       color: var(--color-accent, #e94560);
       text-decoration: underline;
     }
-
-    .version-date {
-      color: var(--color-text-muted, #666);
-    }
   `;
 
   constructor() {
     super();
-    this.baseUrl = '../data/';
+    this.baseUrl = 'data/roaringbuckets/';
     this._status = { message: 'Ready', type: 'info', timestamp: Date.now() };
     this._selectedEdid = null;
     this._layoutMode = 'wide';
     this._showDetail = false;
     this._resizeObserver = null;
-    this._upstream = null;
+    this._manifest = null;
   }
 
   connectedCallback() {
@@ -255,10 +251,9 @@ export class EdidBrowser extends LitElement {
       const response = await fetch(`${this.baseUrl}manifest.json`);
       if (response.ok) {
         const manifest = await response.json();
-        this._upstream = {
-          commit: manifest?.upstream?.commit,
-          date: manifest?.upstream?.date,
-          datasetsVersion: manifest?.version || manifest?.datasetsVersion,
+        this._manifest = {
+          totalCount: manifest?.totalCount || manifest?.total_count,
+          version: manifest?.version,
         };
       }
     } catch (err) {
@@ -300,34 +295,25 @@ export class EdidBrowser extends LitElement {
     this.removeAttribute('show-detail');
   }
 
-  _renderUpstreamInfo() {
-    if (!this._upstream) {
-      return html`Data: <a href="https://github.com/linuxhw/EDID" target="_blank">linuxhw/EDID</a>`;
+  _renderVersionInfo() {
+    if (!this._manifest?.version) {
+      return html`<a href="https://github.com/lokkju/linuxhw-datasets" target="_blank">linuxhw-datasets</a>`;
     }
-    const { commit, date, datasetsVersion } = this._upstream;
-    const shortCommit = commit ? commit.slice(0, 7) : '';
-    const parts = [];
+    return html`<a href="https://github.com/lokkju/linuxhw-datasets" target="_blank">linuxhw-datasets v${this._manifest.version}</a>`;
+  }
 
-    if (shortCommit) {
-      parts.push(html`EDID: <a href="https://github.com/linuxhw/EDID/commit/${commit}" target="_blank">${shortCommit}</a>`);
-    }
-    if (date) {
-      parts.push(html`<span class="version-date">${date}</span>`);
-    }
-    if (datasetsVersion) {
-      parts.push(html`datasets: <a href="https://github.com/lokkju/linuxhw-datasets" target="_blank">v${datasetsVersion}</a>`);
-    }
-
-    return parts.length > 0
-      ? html`${parts.map((p, i) => html`${i > 0 ? ' · ' : ''}${p}`)}`
-      : html`Data: <a href="https://github.com/linuxhw/EDID" target="_blank">linuxhw/EDID</a>`;
+  _formatCount(count) {
+    if (!count) return '';
+    return count.toLocaleString();
   }
 
   render() {
+    const count = this._manifest?.totalCount;
+
     return html`
       <div class="header">
         <h1>EDID Browser</h1>
-        <span class="count">141,753 monitors</span>
+        ${count ? html`<span class="count">${this._formatCount(count)} EDIDs</span>` : ''}
         <a href="https://github.com/lokkju/linuxhw-datasets" target="_blank" class="project-link">linuxhw-datasets</a>
       </div>
       <div class="main-content">
@@ -349,7 +335,7 @@ export class EdidBrowser extends LitElement {
       <div class="status-bar">
         <span class="status-indicator" data-type=${this._status.type}></span>
         <span class="status-message">${this._status.message}</span>
-        <span class="status-source">${this._renderUpstreamInfo()}</span>
+        <span class="status-source">${this._renderVersionInfo()}</span>
       </div>
     `;
   }
