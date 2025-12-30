@@ -72,27 +72,71 @@ export class SearchTabs extends LitElement {
       background: var(--color-accent, #e94560);
     }
 
-    .tab-progress {
-      display: inline-block;
-      width: 6px;
-      height: 6px;
-      margin-left: 0.375rem;
-      border-radius: 50%;
-      vertical-align: middle;
+    .tab-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
     }
 
-    .tab-progress[data-state="loading"] {
+    .tab-label {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .tab-progress-bar {
+      width: 100%;
+      height: 2px;
+      background: var(--color-border, #2a2a4e);
+      border-radius: 1px;
+      overflow: hidden;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .tab-progress-bar[data-state="loading"] {
+      opacity: 1;
+    }
+
+    .tab-progress-bar[data-state="loaded"] {
+      opacity: 0;
+    }
+
+    .tab-progress-fill {
+      height: 100%;
       background: var(--color-accent, #e94560);
-      animation: pulse 1s ease-in-out infinite;
+      transition: width 0.2s ease-out;
+      border-radius: 1px;
     }
 
-    .tab-progress[data-state="loaded"] {
-      background: #4ade80;
+    .tab-check {
+      font-size: 0.625rem;
+      color: #4ade80;
+      opacity: 0;
+      transition: opacity 0.2s;
     }
 
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
+    .tab-check[data-visible="true"] {
+      opacity: 1;
+    }
+
+    .tab-spinner {
+      width: 10px;
+      height: 10px;
+      border: 1.5px solid var(--color-border, #2a2a4e);
+      border-top-color: var(--color-accent, #e94560);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      opacity: 0;
+    }
+
+    .tab-spinner[data-visible="true"] {
+      opacity: 1;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
 
     .search-row {
@@ -260,7 +304,12 @@ export class SearchTabs extends LitElement {
   _renderTab(tab) {
     const isActive = this.activeTab === tab.id;
     const state = this._getTabState(tab.id);
-    const showIndicator = state === 'loading' || state === 'loaded';
+    const loadInfo = this._loadingStates[tab.id];
+    const progress = loadInfo && loadInfo.total > 0
+      ? Math.round((loadInfo.loaded / loadInfo.total) * 100)
+      : 0;
+    const isLoading = state === 'loading';
+    const isLoaded = state === 'loaded';
 
     return html`
       <button
@@ -268,7 +317,16 @@ export class SearchTabs extends LitElement {
         data-active=${isActive}
         @click=${() => this._onTabClick(tab.id)}
       >
-        ${tab.label}${showIndicator ? html`<span class="tab-progress" data-state=${state}></span>` : ''}
+        <span class="tab-content">
+          <span class="tab-label">
+            ${tab.label}
+            <span class="tab-spinner" data-visible=${isLoading}></span>
+            <span class="tab-check" data-visible=${isLoaded}>&#10003;</span>
+          </span>
+          <span class="tab-progress-bar" data-state=${state}>
+            <span class="tab-progress-fill" style="width: ${progress}%"></span>
+          </span>
+        </span>
       </button>
     `;
   }
