@@ -59,9 +59,12 @@
     }
   },
   "devDependencies": {
-    "@custom-elements-manifest/analyzer": "^0.10.0"
+    "@custom-elements-manifest/analyzer": "^0.10.0",
+    "serve": "^14.0.0"
   },
   "scripts": {
+    "start": "serve -l 8080",
+    "serve": "serve -l 8080",
     "analyze": "cem analyze --litelement",
     "prepublishOnly": "npm run analyze"
   }
