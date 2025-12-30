@@ -1,0 +1,67 @@
+{
+  "name": "linuxhw-browser",
+  "version": "0.1.0",
+  "description": "Web components for browsing EDID display data from LinuxHW",
+  "license": "(Polyform-Shield-1.0.0 OR AGPL-3.0-or-later)",
+  "type": "module",
+  "main": "src/index.js",
+  "module": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./edid-browser.js": "./src/edid-browser.js",
+    "./edid-viewer.js": "./src/edid-viewer.js",
+    "./edid-decoder.js": "./src/edid-decoder.js",
+    "./edid-selector.js": "./src/edid-selector.js",
+    "./edid-detail.js": "./src/edid-detail.js",
+    "./edid-utils.js": "./src/edid-utils.js",
+    "./bucket-loader.js": "./src/bucket-loader.js",
+    "./index-loader.js": "./src/index-loader.js",
+    "./roaring.js": "./src/roaring.js",
+    "./search-tabs.js": "./src/search-tabs.js",
+    "./results-table.js": "./src/results-table.js"
+  },
+  "files": [
+    "src/",
+    "custom-elements.json",
+    "README.md",
+    "LICENSE",
+    "LICENSE-AGPL"
+  ],
+  "customElements": "custom-elements.json",
+  "keywords": [
+    "web-components",
+    "lit",
+    "edid",
+    "display",
+    "monitor",
+    "linuxhw",
+    "browser"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lokkju/linuxhw-browser.git"
+  },
+  "homepage": "https://github.com/lokkju/linuxhw-browser",
+  "bugs": {
+    "url": "https://github.com/lokkju/linuxhw-browser/issues"
+  },
+  "author": "lokkju",
+  "dependencies": {
+    "lit": "^3.0.0"
+  },
+  "peerDependencies": {
+    "roaring-wasm": "^1.0.0"
+  },
+  "peerDependenciesMeta": {
+    "roaring-wasm": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@custom-elements-manifest/analyzer": "^0.10.0"
+  },
+  "scripts": {
+    "analyze": "cem analyze --litelement",
+    "prepublishOnly": "npm run analyze"
+  }
+}
