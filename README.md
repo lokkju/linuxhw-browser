@@ -36,7 +36,7 @@ Then open http://localhost:8080 in your browser.
 The browser reads RoaringBuckets format files from a data directory. Configure the data location:
 
 ```html
-<edid-browser data-base-url="./data/"></edid-browser>
+<edid-browser data-base-url="https://raw.githubusercontent.com/lokkju/linuxhw-datasets/main/"></edid-browser>
 ```
 
 Generate data files using [linuxhw-datasets](https://github.com/lokkju/linuxhw-datasets):
