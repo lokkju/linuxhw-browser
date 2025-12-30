@@ -1,0 +1,68 @@
+VERSION 0.8
+
+# Build edid-decode as WebAssembly using Emscripten
+# Source: https://git.linuxtv.org/edid-decode.git (mirror: oe-mirrors/edid-decode)
+
+FROM emscripten/emsdk:3.1.51
+
+build:
+    WORKDIR /build
+
+    # Install meson and ninja
+    RUN pip3 install meson ninja
+
+    # Clone edid-decode (using GitHub mirror since git.linuxtv.org can be unreliable)
+    GIT CLONE --branch master https://github.com/oe-mirrors/edid-decode.git edid-decode
+    WORKDIR /build/edid-decode
+
+    # Configure with meson using emscripten cross-file
+    RUN meson setup build-wasm \
+        --cross-file ./emscripten/wasm-crossfile.txt \
+        --prefix=/build/install-wasm \
+        --buildtype=release
+
+    # Build
+    RUN meson compile -C build-wasm
+
+    # Install
+    RUN meson install -C build-wasm
+
+    # Save build artifacts
+    SAVE ARTIFACT /build/install-wasm/bin/edid-decode.js AS LOCAL edid-decode.js
+    SAVE ARTIFACT /build/install-wasm/bin/edid-decode.wasm AS LOCAL edid-decode.wasm
+    SAVE ARTIFACT /build/install-wasm/bin/edid-decode.html AS LOCAL edid-decode.html
+    SAVE ARTIFACT /build/install-wasm/bin/edid-decode.ico AS LOCAL edid-decode.ico
+
+# Optimized build with smaller output
+build-optimized:
+    WORKDIR /build
+
+    # Install meson and ninja
+    RUN pip3 install meson ninja
+
+    # Clone edid-decode
+    GIT CLONE --branch master https://github.com/oe-mirrors/edid-decode.git edid-decode
+    WORKDIR /build/edid-decode
+
+    # Copy optimized cross-file
+    COPY wasm-crossfile-opt.txt /tmp/wasm-crossfile-opt.txt
+
+    # Configure with optimized settings
+    RUN meson setup build-wasm \
+        --cross-file /tmp/wasm-crossfile-opt.txt \
+        --prefix=/build/install-wasm \
+        --buildtype=release
+
+    # Build
+    RUN meson compile -C build-wasm
+
+    # Install
+    RUN meson install -C build-wasm
+
+    # Save build artifacts
+    SAVE ARTIFACT /build/install-wasm/bin/edid-decode.js AS LOCAL edid-decode.js
+    SAVE ARTIFACT /build/install-wasm/bin/edid-decode.wasm AS LOCAL edid-decode.wasm
+
+# Default target
+all:
+    BUILD +build-optimized

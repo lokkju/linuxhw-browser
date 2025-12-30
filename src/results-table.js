@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { decodeRoaringLimit, countRoaring } from './roaring.js';
-import { decodeEdid } from './edid-decoder.js';
+import { decodeEdidBasic } from './edid-decoder-basic.js';
 
 const INITIAL_LOAD = 50;
 const LOAD_MORE = 25;
@@ -520,7 +520,7 @@ export class ResultsTable extends LitElement {
     // Hash results are direct EDID entries - render differently
     if (this.activeTab === 'hashes' && result._hashEntry) {
       const isSelected = this._selectedEdid === result._hashEntry.md5Hex;
-      const decoded = result._hashEntry.rawEdid ? decodeEdid(result._hashEntry.rawEdid) : {};
+      const decoded = result._hashEntry.rawEdid ? decodeEdidBasic(result._hashEntry.rawEdid) : {};
 
       return html`
         <li class="result-item" data-selected=${isSelected}>
@@ -595,8 +595,8 @@ export class ResultsTable extends LitElement {
       `;
     }
 
-    // Decode EDID for display fields
-    const decoded = edid.rawEdid ? decodeEdid(edid.rawEdid) : {};
+    // Decode EDID for display fields (using basic decoder for performance)
+    const decoded = edid.rawEdid ? decodeEdidBasic(edid.rawEdid) : {};
 
     const resolution = decoded.preferredResolution
       ? `${decoded.preferredResolution.width}x${decoded.preferredResolution.height}`

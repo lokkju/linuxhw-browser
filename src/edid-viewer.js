@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { decodeEdid } from './edid-decoder.js';
+import { isWasmSupported, decodeEdidWasm } from './edid-decode-wasm.js';
 
 /**
  * Standalone EDID viewer component.
@@ -21,6 +22,11 @@ export class EdidViewer extends LitElement {
     _expandedSections: { type: Object, state: true },
     _activeTab: { type: String, state: true },
     _copied: { type: Boolean, state: true },
+    // WASM edid-decode state
+    _wasmSupported: { type: Boolean, state: true },
+    _wasmOutput: { type: String, state: true },
+    _wasmLoading: { type: Boolean, state: true },
+    _wasmError: { type: String, state: true },
   };
 
   static styles = css`
@@ -373,6 +379,85 @@ export class EdidViewer extends LitElement {
       outline: none;
       border-color: var(--color-accent, #e94560);
     }
+
+    /* edid-decode WASM output styles */
+    .edid-decode-output {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .edid-decode-output pre {
+      flex: 1;
+      margin: 0;
+      padding: 0.75rem;
+      background: var(--color-bg, #1a1a2e);
+      border: 1px solid var(--color-border, #2a2a4e);
+      border-radius: var(--radius, 4px);
+      color: var(--color-text, #eee);
+      font-family: ui-monospace, monospace;
+      font-size: 0.75rem;
+      line-height: 1.5;
+      overflow: auto;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .loading-indicator {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      gap: 1rem;
+      color: var(--color-text-muted, #888);
+    }
+
+    .loading-spinner {
+      width: 32px;
+      height: 32px;
+      border: 3px solid var(--color-border, #2a2a4e);
+      border-top-color: var(--color-accent, #e94560);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .error-message {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      gap: 0.5rem;
+      color: var(--color-accent, #e94560);
+      text-align: center;
+      padding: 1rem;
+    }
+
+    .error-message .error-title {
+      font-weight: 600;
+    }
+
+    .error-message .error-detail {
+      font-size: 0.75rem;
+      color: var(--color-text-muted, #888);
+    }
+
+    .tab-badge {
+      display: inline-block;
+      padding: 0.125rem 0.25rem;
+      background: var(--color-accent, #e94560);
+      color: white;
+      font-size: 0.5rem;
+      border-radius: 2px;
+      margin-left: 0.25rem;
+      text-transform: uppercase;
+      vertical-align: super;
+    }
   `;
 
   constructor() {
@@ -396,11 +481,19 @@ export class EdidViewer extends LitElement {
     };
     this._activeTab = 'decoded';
     this._copied = false;
+    // WASM state
+    this._wasmSupported = isWasmSupported();
+    this._wasmOutput = null;
+    this._wasmLoading = false;
+    this._wasmError = null;
   }
 
   willUpdate(changedProps) {
     if (changedProps.has('edidData')) {
       this._decoded = this.edidData ? decodeEdid(this.edidData) : null;
+      // Reset WASM state when EDID data changes
+      this._wasmOutput = null;
+      this._wasmError = null;
     }
   }
 
@@ -413,6 +506,57 @@ export class EdidViewer extends LitElement {
 
   _onBack() {
     this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+  }
+
+  async _onEdidDecodeTab() {
+    this._activeTab = 'edid-decode';
+
+    // Only load if we haven't already
+    if (!this._wasmOutput && !this._wasmLoading && !this._wasmError) {
+      this._wasmLoading = true;
+      try {
+        this._wasmOutput = await decodeEdidWasm(this.edidData);
+      } catch (err) {
+        console.error('WASM decode error:', err);
+        this._wasmError = err.message || 'Failed to decode EDID';
+      } finally {
+        this._wasmLoading = false;
+      }
+    }
+  }
+
+  _renderEdidDecode() {
+    if (this._wasmLoading) {
+      return html`
+        <div class="loading-indicator">
+          <div class="loading-spinner"></div>
+          <span>Loading edid-decode WASM...</span>
+        </div>
+      `;
+    }
+
+    if (this._wasmError) {
+      return html`
+        <div class="error-message">
+          <span class="error-title">WASM Decode Error</span>
+          <span class="error-detail">${this._wasmError}</span>
+        </div>
+      `;
+    }
+
+    if (!this._wasmOutput) {
+      return html`
+        <div class="loading-indicator">
+          <span>Click to load edid-decode output</span>
+        </div>
+      `;
+    }
+
+    return html`
+      <div class="edid-decode-output">
+        <pre>${this._wasmOutput}</pre>
+      </div>
+    `;
   }
 
   render() {
@@ -440,6 +584,13 @@ export class EdidViewer extends LitElement {
           data-active=${this._activeTab === 'decoded'}
           @click=${() => this._activeTab = 'decoded'}
         >Decoded</button>
+        ${this._wasmSupported ? html`
+          <button
+            class="tab"
+            data-active=${this._activeTab === 'edid-decode'}
+            @click=${() => this._onEdidDecodeTab()}
+          >edid-decode<span class="tab-badge">wasm</span></button>
+        ` : ''}
         <button
           class="tab"
           data-active=${this._activeTab === 'hex'}
@@ -452,7 +603,9 @@ export class EdidViewer extends LitElement {
         >edid-decode Hex</button>
       </div>
       <div class="content">
-        ${this._activeTab === 'decoded' ? this._renderDecoded() : this._renderHex(this._activeTab === 'hex-spaced')}
+        ${this._activeTab === 'decoded' ? this._renderDecoded()
+          : this._activeTab === 'edid-decode' ? this._renderEdidDecode()
+          : this._renderHex(this._activeTab === 'hex-spaced')}
       </div>
     `;
   }
