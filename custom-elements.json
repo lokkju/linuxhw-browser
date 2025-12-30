@@ -1,0 +1,2612 @@
+{
+  "schemaVersion": "1.0.0",
+  "readme": "",
+  "modules": [
+    {
+      "kind": "javascript-module",
+      "path": "src/bucket-loader.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "BucketLoader",
+          "members": [
+            {
+              "kind": "method",
+              "name": "loadManifest",
+              "description": "Load manifest (required for global index lookups)."
+            },
+            {
+              "kind": "method",
+              "name": "getGitHubUrl",
+              "parameters": [
+                {
+                  "name": "entry",
+                  "description": "Entry object with rawEdid, idHex, and vendorName",
+                  "type": {
+                    "text": "Object"
+                  }
+                }
+              ],
+              "description": "Get GitHub URL for an EDID entry.\nUses vendor name from bucket data (v4 format) for correct URL construction.",
+              "return": {
+                "type": {
+                  "text": "string|null"
+                }
+              }
+            },
+            {
+              "kind": "method",
+              "name": "load",
+              "parameters": [
+                {
+                  "name": "prefix"
+                }
+              ],
+              "description": "Load a bucket file by prefix (0-255)."
+            },
+            {
+              "kind": "method",
+              "name": "_fetchAndParse",
+              "parameters": [
+                {
+                  "name": "prefix"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "getByGlobalIndex",
+              "parameters": [
+                {
+                  "name": "globalIndex"
+                }
+              ],
+              "description": "Get an entry by global index.\nGlobal index = position in sorted MD5 order across all buckets."
+            },
+            {
+              "kind": "method",
+              "name": "getByBucketIndex",
+              "parameters": [
+                {
+                  "name": "prefix"
+                },
+                {
+                  "name": "localIndex"
+                }
+              ],
+              "description": "Get an entry by bucket prefix and local index within that bucket."
+            },
+            {
+              "kind": "field",
+              "name": "baseUrl",
+              "default": "baseUrl"
+            },
+            {
+              "kind": "field",
+              "name": "buckets",
+              "default": "new Map()"
+            },
+            {
+              "kind": "field",
+              "name": "loading",
+              "default": "new Map()"
+            },
+            {
+              "kind": "field",
+              "name": "manifest",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "bucketOffsets",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            }
+          ]
+        },
+        {
+          "kind": "class",
+          "description": "",
+          "name": "ParsedBucket",
+          "members": [
+            {
+              "kind": "method",
+              "name": "_parseHeader"
+            },
+            {
+              "kind": "method",
+              "name": "_parseVendorTable"
+            },
+            {
+              "kind": "method",
+              "name": "getEntry",
+              "parameters": [
+                {
+                  "name": "index"
+                }
+              ],
+              "description": "Get entry at local index.\nReturns ID (6 or 16 bytes depending on version), raw EDID bytes, and vendor name (v4+)."
+            },
+            {
+              "kind": "method",
+              "name": "getAllEntries",
+              "description": "Get all entries (for debugging)."
+            },
+            {
+              "kind": "field",
+              "name": "prefix",
+              "default": "prefix"
+            },
+            {
+              "kind": "field",
+              "name": "buffer",
+              "default": "await response.arrayBuffer()"
+            },
+            {
+              "kind": "field",
+              "name": "view",
+              "default": "new DataView(buffer.buffer, buffer.byteOffset, buffer.byteLength)"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "BucketLoader",
+          "declaration": {
+            "name": "BucketLoader",
+            "module": "src/bucket-loader.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "ParsedBucket",
+          "declaration": {
+            "name": "ParsedBucket",
+            "module": "src/bucket-loader.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/edid-browser.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Main EDID browser component - wrapper that coordinates selector and viewer.\nHandles responsive layout and status display.",
+          "name": "EdidBrowser",
+          "members": [
+            {
+              "kind": "method",
+              "name": "_loadManifest"
+            },
+            {
+              "kind": "method",
+              "name": "_updateLayout",
+              "parameters": [
+                {
+                  "name": "width"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_onStatus",
+              "parameters": [
+                {
+                  "name": "e"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_onEdidSelect",
+              "parameters": [
+                {
+                  "name": "e"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_onDetailBack"
+            },
+            {
+              "kind": "method",
+              "name": "_renderUpstreamInfo"
+            },
+            {
+              "kind": "field",
+              "name": "baseUrl",
+              "privacy": "public",
+              "type": {
+                "text": "string"
+              },
+              "default": "'../data/'",
+              "description": "Base URL for data files",
+              "attribute": "data-base-url"
+            },
+            {
+              "kind": "field",
+              "name": "_status",
+              "privacy": "public",
+              "type": {
+                "text": "object"
+              },
+              "default": "{ message: 'Ready', type: 'info', timestamp: Date.now() }",
+              "attribute": "_status"
+            },
+            {
+              "kind": "field",
+              "name": "_selectedEdid",
+              "privacy": "public",
+              "type": {
+                "text": "null"
+              },
+              "default": "null",
+              "attribute": "_selectedEdid"
+            },
+            {
+              "kind": "field",
+              "name": "_layoutMode",
+              "privacy": "public",
+              "type": {
+                "text": "string"
+              },
+              "default": "'wide'",
+              "attribute": "_layoutMode"
+            },
+            {
+              "kind": "field",
+              "name": "_showDetail",
+              "privacy": "public",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "_showDetail"
+            },
+            {
+              "kind": "field",
+              "name": "_resizeObserver",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_upstream",
+              "privacy": "public",
+              "type": {
+                "text": "null"
+              },
+              "default": "null",
+              "attribute": "_upstream"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "data-base-url",
+              "type": {
+                "text": "string"
+              },
+              "default": "'../data/'",
+              "description": "Base URL for data files",
+              "fieldName": "baseUrl"
+            },
+            {
+              "name": "_status",
+              "type": {
+                "text": "object"
+              },
+              "default": "{ message: 'Ready', type: 'info', timestamp: Date.now() }",
+              "fieldName": "_status"
+            },
+            {
+              "name": "_selectedEdid",
+              "type": {
+                "text": "null"
+              },
+              "default": "null",
+              "fieldName": "_selectedEdid"
+            },
+            {
+              "name": "_layoutMode",
+              "type": {
+                "text": "string"
+              },
+              "default": "'wide'",
+              "fieldName": "_layoutMode"
+            },
+            {
+              "name": "_showDetail",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "_showDetail"
+            },
+            {
+              "name": "_upstream",
+              "type": {
+                "text": "null"
+              },
+              "default": "null",
+              "fieldName": "_upstream"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "edid-browser",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "EdidBrowser",
+          "declaration": {
+            "name": "EdidBrowser",
+            "module": "src/edid-browser.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "edid-browser",
+          "declaration": {
+            "name": "EdidBrowser",
+            "module": "src/edid-browser.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/edid-decoder.js",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "EDID_BLOCK_LENGTH",
+          "type": {
+            "text": "number"
+          },
+          "default": "128",
+          "description": "Comprehensive EDID decoder for browser.\nPorted from dgallegos/edidreader (MIT License) to ES modules.\n\nDecodes:\n- Base EDID block (128 bytes): header, manufacturer, product, timings\n- CEA-861 extension blocks: audio, video, vendor-specific data\n- HDMI 1.4/2.0/Forum vendor blocks\n- HDR metadata, colorimetry, YCbCr 4:2:0"
+        },
+        {
+          "kind": "variable",
+          "name": "DTD_LENGTH",
+          "type": {
+            "text": "number"
+          },
+          "default": "18"
+        },
+        {
+          "kind": "variable",
+          "name": "WHITE_AND_SYNC_LEVELS",
+          "type": {
+            "text": "array"
+          },
+          "default": "[ '+0.7/-0.3 V', '+0.714/-0.286 V', '+1.0/-0.4 V', '+0.7/0 V' ]"
+        },
+        {
+          "kind": "variable",
+          "name": "DIGITAL_COLOR_SPACE",
+          "type": {
+            "text": "array"
+          },
+          "default": "[ 'RGB 4:4:4', 'RGB 4:4:4 + YCrCb 4:4:4', 'RGB 4:4:4 + YCrCb 4:2:2', 'RGB 4:4:4 + YCrCb 4:4:4 + YCrCb 4:2:2' ]"
+        },
+        {
+          "kind": "variable",
+          "name": "ANALOG_COLOR_SPACE",
+          "type": {
+            "text": "array"
+          },
+          "default": "[ 'Monochrome or Grayscale', 'RGB color', 'Non-RGB color', 'Undefined' ]"
+        },
+        {
+          "kind": "variable",
+          "name": "ESTABLISHED_TIMINGS",
+          "type": {
+            "text": "array"
+          },
+          "default": "[ '720x400 @ 70 Hz', '720x400 @ 88 Hz', '640x480 @ 60 Hz', '640x480 @ 67 Hz', '640x480 @ 72 Hz', '640x480 @ 75 Hz', '800x600 @ 56 Hz', '800x600 @ 60 Hz', '800x600 @ 72 Hz', '800x600 @ 75 Hz', '832x624 @ 75 Hz', '1024x768i @ 87 Hz', '1024x768 @ 60 Hz', '1024x768 @ 72 Hz', '1024x768 @ 75 Hz', '1280x1024 @ 75 Hz', '1152x870 @ 75 Hz' ]"
+        },
+        {
+          "kind": "variable",
+          "name": "ASPECT_RATIOS",
+          "type": {
+            "text": "array"
+          },
+          "default": "['16:10', '4:3', '5:4', '16:9']"
+        },
+        {
+          "kind": "variable",
+          "name": "SYNC_TYPE",
+          "type": {
+            "text": "object"
+          },
+          "default": "{ ANALOG_COMPOSITE: 0x00, BIPOLAR_ANALOG_COMPOSITE: 0x01, DIGITAL_COMPOSITE: 0x02, DIGITAL_SEPARATE: 0x03 }"
+        },
+        {
+          "kind": "variable",
+          "name": "DATA_BLOCK_TYPE",
+          "type": {
+            "text": "object"
+          },
+          "default": "{ RESERVED: 0, AUDIO: 1, VIDEO: 2, VENDOR_SPECIFIC: 3, SPEAKER_ALLOCATION: 4, EXTENDED_TAG: 7 }"
+        },
+        {
+          "kind": "variable",
+          "name": "EXTENDED_DATA_BLOCK_TYPE",
+          "type": {
+            "text": "object"
+          },
+          "default": "{ VIDEO_CAPABILITY: 0, VENDOR_SPECIFIC_VIDEO: 1, COLORIMETRY: 5, HDR_STATIC_METADATA: 6, HDR_DYNAMIC_METADATA: 7, VIDEO_FORMAT_PREFERENCE: 13, YCBCR420_VIDEO: 14, YCBCR420_CAPABILITY_MAP: 15, ROOM_CONFIGURATION: 19, HDMI_FORUM_SCDB: 0x79 }"
+        },
+        {
+          "kind": "variable",
+          "name": "IEEE_OUI",
+          "type": {
+            "text": "object"
+          },
+          "default": "{ HDMI14: 0x000C03, HDMI20: 0xC45DD8 }"
+        },
+        {
+          "kind": "variable",
+          "name": "AUDIO_FORMATS",
+          "type": {
+            "text": "array"
+          },
+          "default": "[ 'RESERVED', 'LPCM', 'AC-3', 'MPEG-1', 'MP3', 'MPEG2', 'AAC LC', 'DTS', 'ATRAC', 'DSD', 'E-AC-3', 'DTS-HD', 'MLP', 'DST', 'WMA Pro' ]"
+        },
+        {
+          "kind": "variable",
+          "name": "SAMPLE_RATES",
+          "type": {
+            "text": "array"
+          },
+          "default": "['32 kHz', '44.1 kHz', '48 kHz', '88.2 kHz', '96 kHz', '176.4 kHz', '192 kHz']"
+        },
+        {
+          "kind": "variable",
+          "name": "BIT_DEPTHS",
+          "type": {
+            "text": "array"
+          },
+          "default": "['16 bit', '20 bit', '24 bit']"
+        },
+        {
+          "kind": "variable",
+          "name": "EOTF_TYPES",
+          "type": {
+            "text": "array"
+          },
+          "default": "[ 'Traditional gamma - SDR luminance range', 'Traditional gamma - HDR luminance range', 'SMPTE ST2084 (PQ)', 'Hybrid Log-Gamma (HLG)' ]"
+        },
+        {
+          "kind": "variable",
+          "name": "OVERSCAN_BEHAVIOR",
+          "type": {
+            "text": "array"
+          },
+          "default": "[ 'No data', 'Always overscanned', 'Always underscanned', 'Supports both' ]"
+        },
+        {
+          "kind": "variable",
+          "name": "SPEAKER_ALLOCATION",
+          "type": {
+            "text": "array"
+          },
+          "default": "[ 'Front Left/Front Right (FL/FR)', 'Low Frequency Effect (LFE)', 'Front Center (FC)', 'Rear Left/Rear Right (RL/RR)', 'Rear Center (RC)', 'Front Left Center/Front Right Center (FLC/FRC)', 'Rear Left Center/Rear Right Center (RLC/RRC)', 'Front Left Wide/Front Right Wide (FLW/FRW)', 'Front Left High/Front Right High (FLH/FRH)', 'Top Center (TC)', 'Front Center High (FCH)' ]"
+        },
+        {
+          "kind": "variable",
+          "name": "VIDEO_FORMATS",
+          "type": {
+            "text": "object"
+          },
+          "default": "{ 1: { format: '640x480p', rate: '59.94/60Hz', aspect: '4:3' }, 2: { format: '720x480p', rate: '59.94/60Hz', aspect: '4:3' }, 3: { format: '720x480p', rate: '59.94/60Hz', aspect: '16:9' }, 4: { format: '1280x720p', rate: '59.94/60Hz', aspect: '16:9' }, 5: { format: '1920x1080i', rate: '59.94/60Hz', aspect: '16:9' }, 16: { format: '1920x1080p', rate: '59.94/60Hz', aspect: '16:9' }, 17: { format: '720x576p', rate: '50Hz', aspect: '4:3' }, 18: { format: '720x576p', rate: '50Hz', aspect: '16:9' }, 19: { format: '1280x720p', rate: '50Hz', aspect: '16:9' }, 20: { format: '1920x1080i', rate: '50Hz', aspect: '16:9' }, 31: { format: '1920x1080p', rate: '50Hz', aspect: '16:9' }, 32: { format: '1920x1080p', rate: '23.97/24Hz', aspect: '16:9' }, 33: { format: '1920x1080p', rate: '25Hz', aspect: '16:9' }, 34: { format: '1920x1080p', rate: '29.97/30Hz', aspect: '16:9' }, 63: { format: '1920x1080p', rate: '119.88/120Hz', aspect: '16:9' }, 64: { format: '1920x1080p', rate: '100Hz', aspect: '16:9' }, 93: { format: '3840x2160p', rate: '23.98/24Hz', aspect: '16:9' }, 94: { format: '3840x2160p', rate: '25Hz', aspect: '16:9' }, 95: { format: '3840x2160p', rate: '29.97/30Hz', aspect: '16:9' }, 96: { format: '3840x2160p', rate: '50Hz', aspect: '16:9' }, 97: { format: '3840x2160p', rate: '59.94/60Hz', aspect: '16:9' }, 98: { format: '4096x2160p', rate: '23.98/24Hz', aspect: '256:135' }, 99: { format: '4096x2160p', rate: '25Hz', aspect: '256:135' }, 100: { format: '4096x2160p', rate: '29.97/30Hz', aspect: '256:135' }, 101: { format: '4096x2160p', rate: '50Hz', aspect: '256:135' }, 102: { format: '4096x2160p', rate: '59.94/60Hz', aspect: '256:135' }, 117: { format: '3840x2160p', rate: '100Hz', aspect: '16:9' }, 118: { format: '3840x2160p', rate: '119.88/120Hz', aspect: '16:9' }, 194: { format: '7680x4320p', rate: '24Hz', aspect: '16:9' }, 195: { format: '7680x4320p', rate: '25Hz', aspect: '16:9' }, 196: { format: '7680x4320p', rate: '30Hz', aspect: '16:9' }, 197: { format: '7680x4320p', rate: '48Hz', aspect: '16:9' }, 198: { format: '7680x4320p', rate: '50Hz', aspect: '16:9' }, 199: { format: '7680x4320p', rate: '60Hz', aspect: '16:9' }, }"
+        },
+        {
+          "kind": "variable",
+          "name": "digital"
+        },
+        {
+          "kind": "function",
+          "name": "decodeEdid",
+          "parameters": [
+            {
+              "name": "data",
+              "description": "Raw EDID bytes (128+ bytes)",
+              "type": {
+                "text": "Uint8Array"
+              }
+            }
+          ],
+          "description": "Decode EDID data into a structured object.",
+          "return": {
+            "type": {
+              "text": "Object"
+            }
+          }
+        },
+        {
+          "kind": "class",
+          "description": "",
+          "name": "EdidDecoder",
+          "members": [
+            {
+              "kind": "method",
+              "name": "setData",
+              "parameters": [
+                {
+                  "name": "data"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "parse"
+            },
+            {
+              "kind": "field",
+              "name": "result",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "data",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "parsed",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "EDID_BLOCK_LENGTH",
+          "declaration": {
+            "name": "EDID_BLOCK_LENGTH",
+            "module": "src/edid-decoder.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "DTD_LENGTH",
+          "declaration": {
+            "name": "DTD_LENGTH",
+            "module": "src/edid-decoder.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "WHITE_AND_SYNC_LEVELS",
+          "declaration": {
+            "name": "WHITE_AND_SYNC_LEVELS",
+            "module": "src/edid-decoder.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "DIGITAL_COLOR_SPACE",
+          "declaration": {
+            "name": "DIGITAL_COLOR_SPACE",
+            "module": "src/edid-decoder.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "ANALOG_COLOR_SPACE",
+          "declaration": {
+            "name": "ANALOG_COLOR_SPACE",
+            "module": "src/edid-decoder.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "ESTABLISHED_TIMINGS",
+          "declaration": {
+            "name": "ESTABLISHED_TIMINGS",
+            "module": "src/edid-decoder.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "ASPECT_RATIOS",
+          "declaration": {
+            "name": "ASPECT_RATIOS",
+            "module": "src/edid-decoder.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "SYNC_TYPE",
+          "declaration": {
+            "name": "SYNC_TYPE",
+            "module": "src/edid-decoder.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "DATA_BLOCK_TYPE",
+          "declaration": {
+            "name": "DATA_BLOCK_TYPE",
+            "module": "src/edid-decoder.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "EXTENDED_DATA_BLOCK_TYPE",
+          "declaration": {
+            "name": "EXTENDED_DATA_BLOCK_TYPE",
+            "module": "src/edid-decoder.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "IEEE_OUI",
+          "declaration": {
+            "name": "IEEE_OUI",
+            "module": "src/edid-decoder.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "AUDIO_FORMATS",
+          "declaration": {
+            "name": "AUDIO_FORMATS",
+            "module": "src/edid-decoder.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "SAMPLE_RATES",
+          "declaration": {
+            "name": "SAMPLE_RATES",
+            "module": "src/edid-decoder.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "BIT_DEPTHS",
+          "declaration": {
+            "name": "BIT_DEPTHS",
+            "module": "src/edid-decoder.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "EOTF_TYPES",
+          "declaration": {
+            "name": "EOTF_TYPES",
+            "module": "src/edid-decoder.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "OVERSCAN_BEHAVIOR",
+          "declaration": {
+            "name": "OVERSCAN_BEHAVIOR",
+            "module": "src/edid-decoder.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "SPEAKER_ALLOCATION",
+          "declaration": {
+            "name": "SPEAKER_ALLOCATION",
+            "module": "src/edid-decoder.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "VIDEO_FORMATS",
+          "declaration": {
+            "name": "VIDEO_FORMATS",
+            "module": "src/edid-decoder.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "decodeEdid",
+          "declaration": {
+            "name": "decodeEdid",
+            "module": "src/edid-decoder.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "EdidDecoder",
+          "declaration": {
+            "name": "EdidDecoder",
+            "module": "src/edid-decoder.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "default",
+          "declaration": {
+            "name": "decodeEdid",
+            "module": "src/edid-decoder.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/edid-detail.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "EDID detail panel - thin wrapper around edid-viewer for browser integration.\nAccepts the browser's edid object format and passes data to edid-viewer.",
+          "name": "EdidDetail",
+          "members": [
+            {
+              "kind": "method",
+              "name": "_getLinuxhwId"
+            },
+            {
+              "kind": "method",
+              "name": "_getGitHubUrl",
+              "parameters": [
+                {
+                  "name": "linuxhwId"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_onBack"
+            },
+            {
+              "kind": "field",
+              "name": "edid",
+              "privacy": "public",
+              "type": {
+                "text": "Object"
+              },
+              "default": "null",
+              "description": "EDID entry from bucket loader ({ idHex, rawEdid, vendorName, _globalIndex })",
+              "attribute": "edid"
+            },
+            {
+              "kind": "field",
+              "name": "mobile",
+              "privacy": "public",
+              "type": {
+                "text": "Boolean"
+              },
+              "default": "false",
+              "description": "Shows back button in mobile view",
+              "attribute": "mobile",
+              "reflects": true
+            }
+          ],
+          "events": [
+            {
+              "name": "back",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "Dispatched when back button is clicked"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "edid",
+              "type": {
+                "text": "Object"
+              },
+              "default": "null",
+              "description": "EDID entry from bucket loader ({ idHex, rawEdid, vendorName, _globalIndex })",
+              "fieldName": "edid"
+            },
+            {
+              "name": "mobile",
+              "type": {
+                "text": "Boolean"
+              },
+              "default": "false",
+              "description": "Shows back button in mobile view",
+              "fieldName": "mobile"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "edid-detail",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "EdidDetail",
+          "declaration": {
+            "name": "EdidDetail",
+            "module": "src/edid-detail.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "edid-detail",
+          "declaration": {
+            "name": "EdidDetail",
+            "module": "src/edid-detail.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/edid-reader-original.js",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/edid-selector.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "EDID selector component - search and browse interface.\nSelf-contained component that manages index loading and search state.",
+          "name": "EdidSelector",
+          "members": [
+            {
+              "kind": "field",
+              "name": "indexLoader",
+              "readonly": true
+            },
+            {
+              "kind": "field",
+              "name": "bucketLoader",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "_preloadIndexes"
+            },
+            {
+              "kind": "method",
+              "name": "_emitStatus",
+              "parameters": [
+                {
+                  "name": "message"
+                },
+                {
+                  "name": "type",
+                  "default": "'info'"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_onTabChange",
+              "parameters": [
+                {
+                  "name": "e"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_loadInitialResults",
+              "parameters": [
+                {
+                  "name": "tab"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_onSearch",
+              "parameters": [
+                {
+                  "name": "e"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_searchByHash",
+              "parameters": [
+                {
+                  "name": "query"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_onEdidSelect",
+              "parameters": [
+                {
+                  "name": "e"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_onStatus",
+              "parameters": [
+                {
+                  "name": "e"
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "baseUrl",
+              "privacy": "public",
+              "type": {
+                "text": "string"
+              },
+              "default": "'../data/'",
+              "description": "Base URL for data files (default: '../data/')",
+              "attribute": "base-url"
+            },
+            {
+              "kind": "field",
+              "name": "activeTab",
+              "privacy": "public",
+              "type": {
+                "text": "string"
+              },
+              "default": "'products'",
+              "description": "Currently active search tab",
+              "attribute": "active-tab"
+            },
+            {
+              "kind": "field",
+              "name": "_results",
+              "privacy": "public",
+              "type": {
+                "text": "array"
+              },
+              "default": "[]",
+              "attribute": "_results"
+            },
+            {
+              "kind": "field",
+              "name": "_isSearching",
+              "privacy": "public",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "_isSearching"
+            },
+            {
+              "kind": "field",
+              "name": "_isLoadingIndex",
+              "privacy": "public",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "_isLoadingIndex"
+            },
+            {
+              "kind": "field",
+              "name": "_searchQuery",
+              "privacy": "public",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "attribute": "_searchQuery"
+            },
+            {
+              "kind": "field",
+              "name": "_indexLoader",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_bucketLoader",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            }
+          ],
+          "events": [
+            {
+              "name": "status",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "Dispatched with status updates, detail: { message, type }"
+            },
+            {
+              "name": "edid-select",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "Dispatched when an EDID is selected, detail: { edid }"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "base-url",
+              "type": {
+                "text": "string"
+              },
+              "default": "'../data/'",
+              "description": "Base URL for data files (default: '../data/')",
+              "fieldName": "baseUrl"
+            },
+            {
+              "name": "active-tab",
+              "type": {
+                "text": "string"
+              },
+              "default": "'products'",
+              "description": "Currently active search tab",
+              "fieldName": "activeTab"
+            },
+            {
+              "name": "_results",
+              "type": {
+                "text": "array"
+              },
+              "default": "[]",
+              "fieldName": "_results"
+            },
+            {
+              "name": "_isSearching",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "_isSearching"
+            },
+            {
+              "name": "_isLoadingIndex",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "_isLoadingIndex"
+            },
+            {
+              "name": "_searchQuery",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "fieldName": "_searchQuery"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "edid-selector",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "EdidSelector",
+          "declaration": {
+            "name": "EdidSelector",
+            "module": "src/edid-selector.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "edid-selector",
+          "declaration": {
+            "name": "EdidSelector",
+            "module": "src/edid-selector.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/edid-utils.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "decodeVendorCode",
+          "parameters": [
+            {
+              "name": "edidBytes",
+              "description": "Full EDID bytes",
+              "type": {
+                "text": "Uint8Array"
+              }
+            }
+          ],
+          "description": "Decode EISA vendor code from EDID bytes 8-9.\nThe 3-character code is packed into 2 bytes using 5 bits per character.",
+          "return": {
+            "type": {
+              "text": "string"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "decodeProductCode",
+          "parameters": [
+            {
+              "name": "edidBytes",
+              "description": "Full EDID bytes",
+              "type": {
+                "text": "Uint8Array"
+              }
+            }
+          ],
+          "description": "Decode product code from EDID bytes 10-11 (little-endian).",
+          "return": {
+            "type": {
+              "text": "string"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "getDisplayType",
+          "parameters": [
+            {
+              "name": "edidBytes",
+              "description": "Full EDID bytes",
+              "type": {
+                "text": "Uint8Array"
+              }
+            }
+          ],
+          "description": "Get display type from EDID byte 20.",
+          "return": {
+            "type": {
+              "text": "string"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "extractPathInfo",
+          "parameters": [
+            {
+              "name": "edidBytes",
+              "description": "Full EDID bytes",
+              "type": {
+                "text": "Uint8Array"
+              }
+            }
+          ],
+          "description": "Extract all computable path info from EDID bytes.",
+          "return": {
+            "type": {
+              "text": "Object"
+            }
+          }
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "decodeVendorCode",
+          "declaration": {
+            "name": "decodeVendorCode",
+            "module": "src/edid-utils.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "decodeProductCode",
+          "declaration": {
+            "name": "decodeProductCode",
+            "module": "src/edid-utils.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "getDisplayType",
+          "declaration": {
+            "name": "getDisplayType",
+            "module": "src/edid-utils.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "extractPathInfo",
+          "declaration": {
+            "name": "extractPathInfo",
+            "module": "src/edid-utils.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/edid-viewer.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Standalone EDID viewer component.\nTakes raw EDID bytes and displays comprehensive decoded information.",
+          "name": "EdidViewer",
+          "members": [
+            {
+              "kind": "method",
+              "name": "_toggleSection",
+              "parameters": [
+                {
+                  "name": "section"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_onBack"
+            },
+            {
+              "kind": "method",
+              "name": "_renderDecoded"
+            },
+            {
+              "kind": "method",
+              "name": "_renderSection",
+              "parameters": [
+                {
+                  "name": "key"
+                },
+                {
+                  "name": "title"
+                },
+                {
+                  "name": "content"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_renderIdentification"
+            },
+            {
+              "kind": "method",
+              "name": "_renderDisplay"
+            },
+            {
+              "kind": "method",
+              "name": "_renderManufacture"
+            },
+            {
+              "kind": "method",
+              "name": "_renderEdidInfo"
+            },
+            {
+              "kind": "method",
+              "name": "_renderTimings"
+            },
+            {
+              "kind": "method",
+              "name": "_renderAudioFormats"
+            },
+            {
+              "kind": "method",
+              "name": "_renderVideoModes"
+            },
+            {
+              "kind": "method",
+              "name": "_renderHdmi"
+            },
+            {
+              "kind": "method",
+              "name": "_renderHdr"
+            },
+            {
+              "kind": "method",
+              "name": "_renderColorimetry"
+            },
+            {
+              "kind": "method",
+              "name": "_calcDiagonal"
+            },
+            {
+              "kind": "method",
+              "name": "_getDecodingIssues"
+            },
+            {
+              "kind": "method",
+              "name": "_getHexString",
+              "parameters": [
+                {
+                  "name": "spaced",
+                  "default": "false"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_copyHex",
+              "parameters": [
+                {
+                  "name": "spaced"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_renderHex",
+              "parameters": [
+                {
+                  "name": "spaced",
+                  "default": "false"
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "edidData",
+              "privacy": "public",
+              "type": {
+                "text": "Uint8Array"
+              },
+              "default": "null",
+              "description": "Raw EDID bytes to decode and display"
+            },
+            {
+              "kind": "field",
+              "name": "hash",
+              "privacy": "public",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "description": "Optional hash/ID to display in header",
+              "attribute": "hash"
+            },
+            {
+              "kind": "field",
+              "name": "githubUrl",
+              "privacy": "public",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "description": "Optional GitHub URL for the EDID source file",
+              "attribute": "github-url"
+            },
+            {
+              "kind": "field",
+              "name": "showBack",
+              "privacy": "public",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "show-back"
+            },
+            {
+              "kind": "field",
+              "name": "_decoded",
+              "privacy": "public",
+              "type": {
+                "text": "null"
+              },
+              "default": "null",
+              "attribute": "_decoded"
+            },
+            {
+              "kind": "field",
+              "name": "_expandedSections",
+              "privacy": "public",
+              "type": {
+                "text": "object"
+              },
+              "default": "{ identification: true, display: true, manufacture: true, edidInfo: true, timings: false, audio: false, video: false, hdmi: false, hdr: false, colorimetry: false, }",
+              "attribute": "_expandedSections"
+            },
+            {
+              "kind": "field",
+              "name": "_activeTab",
+              "privacy": "public",
+              "type": {
+                "text": "string"
+              },
+              "default": "'decoded'",
+              "attribute": "_activeTab"
+            },
+            {
+              "kind": "field",
+              "name": "_copied",
+              "privacy": "public",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "_copied"
+            }
+          ],
+          "events": [
+            {
+              "name": "back",
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "Dispatched when back button is clicked (for mobile view)"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "hash",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "description": "Optional hash/ID to display in header",
+              "fieldName": "hash"
+            },
+            {
+              "name": "github-url",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "description": "Optional GitHub URL for the EDID source file",
+              "fieldName": "githubUrl"
+            },
+            {
+              "name": "show-back",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "showBack"
+            },
+            {
+              "name": "_decoded",
+              "type": {
+                "text": "null"
+              },
+              "default": "null",
+              "fieldName": "_decoded"
+            },
+            {
+              "name": "_expandedSections",
+              "type": {
+                "text": "object"
+              },
+              "default": "{ identification: true, display: true, manufacture: true, edidInfo: true, timings: false, audio: false, video: false, hdmi: false, hdr: false, colorimetry: false, }",
+              "fieldName": "_expandedSections"
+            },
+            {
+              "name": "_activeTab",
+              "type": {
+                "text": "string"
+              },
+              "default": "'decoded'",
+              "fieldName": "_activeTab"
+            },
+            {
+              "name": "_copied",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "_copied"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "edid-viewer",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "EdidViewer",
+          "declaration": {
+            "name": "EdidViewer",
+            "module": "src/edid-viewer.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "edid-viewer",
+          "declaration": {
+            "name": "EdidViewer",
+            "module": "src/edid-viewer.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/index-loader.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Loads and parses packed index files (.idx) with progress tracking.\n\nIndex file format (EIDX):\n  Header (16 bytes): magic(4) + version(2) + count(4) + reserved(6)\n  Entry table (12 bytes each): string_offset(4) + string_len(2) + bitmap_offset(4) + bitmap_len(2)\n  Strings section: UTF-8 packed\n  Bitmaps section: Roaring bitmaps packed",
+          "name": "IndexLoader",
+          "members": [
+            {
+              "kind": "method",
+              "name": "onProgress",
+              "parameters": [
+                {
+                  "name": "callback"
+                }
+              ],
+              "description": "Subscribe to progress updates. Callback: (name, loaded, total, done)"
+            },
+            {
+              "kind": "method",
+              "name": "_notifyProgress",
+              "parameters": [
+                {
+                  "name": "name"
+                },
+                {
+                  "name": "loaded"
+                },
+                {
+                  "name": "total"
+                },
+                {
+                  "name": "done",
+                  "default": "false"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "getState",
+              "parameters": [
+                {
+                  "name": "name"
+                }
+              ],
+              "description": "Get current loading state for an index"
+            },
+            {
+              "kind": "method",
+              "name": "getProgress",
+              "parameters": [
+                {
+                  "name": "name"
+                }
+              ],
+              "description": "Get progress for an index"
+            },
+            {
+              "kind": "method",
+              "name": "load",
+              "parameters": [
+                {
+                  "name": "name"
+                }
+              ],
+              "description": "Load an index by name (vendors, products, codes, sizes)"
+            },
+            {
+              "kind": "method",
+              "name": "_fetchAndParse",
+              "parameters": [
+                {
+                  "name": "name"
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "baseUrl",
+              "default": "baseUrl"
+            },
+            {
+              "kind": "field",
+              "name": "indexes",
+              "default": "new Map()"
+            },
+            {
+              "kind": "field",
+              "name": "loading",
+              "default": "new Map()"
+            },
+            {
+              "kind": "field",
+              "name": "progress",
+              "default": "new Map()"
+            },
+            {
+              "kind": "field",
+              "name": "listeners",
+              "default": "new Set()"
+            }
+          ]
+        },
+        {
+          "kind": "class",
+          "description": "Parsed index with search capability.",
+          "name": "ParsedIndex",
+          "members": [
+            {
+              "kind": "method",
+              "name": "_parse"
+            },
+            {
+              "kind": "method",
+              "name": "search",
+              "parameters": [
+                {
+                  "name": "query"
+                }
+              ],
+              "description": "Search for entries matching query (case-insensitive prefix match)"
+            },
+            {
+              "kind": "method",
+              "name": "getBitmapBytes",
+              "parameters": [
+                {
+                  "name": "entry"
+                }
+              ],
+              "description": "Get the Roaring bitmap bytes for an entry"
+            },
+            {
+              "kind": "field",
+              "name": "name",
+              "default": "name"
+            },
+            {
+              "kind": "field",
+              "name": "buffer",
+              "default": "new Uint8Array(loaded)"
+            },
+            {
+              "kind": "field",
+              "name": "view",
+              "default": "new DataView(buffer.buffer, buffer.byteOffset, buffer.byteLength)"
+            },
+            {
+              "kind": "field",
+              "name": "entries",
+              "type": {
+                "text": "array"
+              },
+              "default": "[]"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "IndexLoader",
+          "declaration": {
+            "name": "IndexLoader",
+            "module": "src/index-loader.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "ParsedIndex",
+          "declaration": {
+            "name": "ParsedIndex",
+            "module": "src/index-loader.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/index.js",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "EdidBrowser",
+          "declaration": {
+            "name": "EdidBrowser",
+            "module": "./edid-browser.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "EdidViewer",
+          "declaration": {
+            "name": "EdidViewer",
+            "module": "./edid-viewer.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "EdidSelector",
+          "declaration": {
+            "name": "EdidSelector",
+            "module": "./edid-selector.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "EdidDetail",
+          "declaration": {
+            "name": "EdidDetail",
+            "module": "./edid-detail.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "SearchTabs",
+          "declaration": {
+            "name": "SearchTabs",
+            "module": "./search-tabs.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "ResultsTable",
+          "declaration": {
+            "name": "ResultsTable",
+            "module": "./results-table.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "decodeEdid",
+          "declaration": {
+            "name": "decodeEdid",
+            "module": "./edid-decoder.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "EdidDecoder",
+          "declaration": {
+            "name": "EdidDecoder",
+            "module": "./edid-decoder.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "EDID_BLOCK_LENGTH",
+          "declaration": {
+            "name": "EDID_BLOCK_LENGTH",
+            "module": "./edid-decoder.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "DTD_LENGTH",
+          "declaration": {
+            "name": "DTD_LENGTH",
+            "module": "./edid-decoder.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "ESTABLISHED_TIMINGS",
+          "declaration": {
+            "name": "ESTABLISHED_TIMINGS",
+            "module": "./edid-decoder.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "ASPECT_RATIOS",
+          "declaration": {
+            "name": "ASPECT_RATIOS",
+            "module": "./edid-decoder.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "AUDIO_FORMATS",
+          "declaration": {
+            "name": "AUDIO_FORMATS",
+            "module": "./edid-decoder.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "SAMPLE_RATES",
+          "declaration": {
+            "name": "SAMPLE_RATES",
+            "module": "./edid-decoder.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "BIT_DEPTHS",
+          "declaration": {
+            "name": "BIT_DEPTHS",
+            "module": "./edid-decoder.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "VIDEO_FORMATS",
+          "declaration": {
+            "name": "VIDEO_FORMATS",
+            "module": "./edid-decoder.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "decodeVendorCode",
+          "declaration": {
+            "name": "decodeVendorCode",
+            "module": "./edid-utils.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "decodeProductCode",
+          "declaration": {
+            "name": "decodeProductCode",
+            "module": "./edid-utils.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "getDisplayType",
+          "declaration": {
+            "name": "getDisplayType",
+            "module": "./edid-utils.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "extractPathInfo",
+          "declaration": {
+            "name": "extractPathInfo",
+            "module": "./edid-utils.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "BucketLoader",
+          "declaration": {
+            "name": "BucketLoader",
+            "module": "./bucket-loader.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "ParsedBucket",
+          "declaration": {
+            "name": "ParsedBucket",
+            "module": "./bucket-loader.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "IndexLoader",
+          "declaration": {
+            "name": "IndexLoader",
+            "module": "./index-loader.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "ParsedIndex",
+          "declaration": {
+            "name": "ParsedIndex",
+            "module": "./index-loader.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "decodeRoaring",
+          "declaration": {
+            "name": "decodeRoaring",
+            "module": "./roaring.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "decodeRoaringLimit",
+          "declaration": {
+            "name": "decodeRoaringLimit",
+            "module": "./roaring.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "countRoaring",
+          "declaration": {
+            "name": "countRoaring",
+            "module": "./roaring.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/results-table.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Results table with infinite scroll.\nShows matching index entries and allows drilling down to individual EDIDs.",
+          "name": "ResultsTable",
+          "members": [
+            {
+              "kind": "method",
+              "name": "_computeCounts"
+            },
+            {
+              "kind": "method",
+              "name": "_getCount",
+              "parameters": [
+                {
+                  "name": "key"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_setupIntersectionObserver"
+            },
+            {
+              "kind": "method",
+              "name": "_observeLoadTrigger"
+            },
+            {
+              "kind": "field",
+              "name": "_visibleResults",
+              "readonly": true
+            },
+            {
+              "kind": "method",
+              "name": "_onResultClick",
+              "parameters": [
+                {
+                  "name": "result"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_loadMoreEdids"
+            },
+            {
+              "kind": "method",
+              "name": "_loadEdids",
+              "parameters": [
+                {
+                  "name": "indices"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_retryEdid",
+              "parameters": [
+                {
+                  "name": "globalIndex"
+                },
+                {
+                  "name": "listIndex"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_onEdidSelect",
+              "parameters": [
+                {
+                  "name": "edid"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_renderResult",
+              "parameters": [
+                {
+                  "name": "result"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_renderExpanded"
+            },
+            {
+              "kind": "method",
+              "name": "_renderEdid",
+              "parameters": [
+                {
+                  "name": "edid"
+                },
+                {
+                  "name": "index"
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "results",
+              "privacy": "public",
+              "type": {
+                "text": "array"
+              },
+              "default": "[]",
+              "attribute": "results"
+            },
+            {
+              "kind": "field",
+              "name": "isLoading",
+              "privacy": "public",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "isLoading"
+            },
+            {
+              "kind": "field",
+              "name": "isLoadingIndex",
+              "privacy": "public",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "isLoadingIndex"
+            },
+            {
+              "kind": "field",
+              "name": "indexLoader",
+              "privacy": "public",
+              "type": {
+                "text": "null"
+              },
+              "default": "null",
+              "attribute": "indexLoader"
+            },
+            {
+              "kind": "field",
+              "name": "bucketLoader",
+              "privacy": "public",
+              "type": {
+                "text": "null"
+              },
+              "default": "null",
+              "attribute": "bucketLoader"
+            },
+            {
+              "kind": "field",
+              "name": "activeTab",
+              "privacy": "public",
+              "type": {
+                "text": "string"
+              },
+              "default": "'products'",
+              "attribute": "activeTab"
+            },
+            {
+              "kind": "field",
+              "name": "_visibleCount",
+              "privacy": "public",
+              "type": {
+                "text": "number"
+              },
+              "default": "50",
+              "attribute": "_visibleCount"
+            },
+            {
+              "kind": "field",
+              "name": "_expandedKey",
+              "privacy": "public",
+              "type": {
+                "text": "null"
+              },
+              "default": "null",
+              "attribute": "_expandedKey"
+            },
+            {
+              "kind": "field",
+              "name": "_expandedEdids",
+              "privacy": "public",
+              "type": {
+                "text": "array"
+              },
+              "default": "[]",
+              "attribute": "_expandedEdids"
+            },
+            {
+              "kind": "field",
+              "name": "_expandedLoading",
+              "privacy": "public",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "attribute": "_expandedLoading"
+            },
+            {
+              "kind": "field",
+              "name": "_expandedError",
+              "privacy": "public",
+              "type": {
+                "text": "null"
+              },
+              "default": "null",
+              "attribute": "_expandedError"
+            },
+            {
+              "kind": "field",
+              "name": "_expandedTotal",
+              "privacy": "public",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "attribute": "_expandedTotal"
+            },
+            {
+              "kind": "field",
+              "name": "_observer",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_countCache",
+              "default": "new Map()"
+            },
+            {
+              "kind": "field",
+              "name": "_selectedEdid",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            }
+          ],
+          "events": [
+            {
+              "name": "edid-select",
+              "type": {
+                "text": "CustomEvent"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "results",
+              "type": {
+                "text": "array"
+              },
+              "default": "[]",
+              "fieldName": "results"
+            },
+            {
+              "name": "isLoading",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "isLoading"
+            },
+            {
+              "name": "isLoadingIndex",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "isLoadingIndex"
+            },
+            {
+              "name": "indexLoader",
+              "type": {
+                "text": "null"
+              },
+              "default": "null",
+              "fieldName": "indexLoader"
+            },
+            {
+              "name": "bucketLoader",
+              "type": {
+                "text": "null"
+              },
+              "default": "null",
+              "fieldName": "bucketLoader"
+            },
+            {
+              "name": "activeTab",
+              "type": {
+                "text": "string"
+              },
+              "default": "'products'",
+              "fieldName": "activeTab"
+            },
+            {
+              "name": "_visibleCount",
+              "type": {
+                "text": "number"
+              },
+              "default": "INITIAL_LOAD",
+              "fieldName": "_visibleCount"
+            },
+            {
+              "name": "_expandedKey",
+              "type": {
+                "text": "null"
+              },
+              "default": "null",
+              "fieldName": "_expandedKey"
+            },
+            {
+              "name": "_expandedEdids",
+              "type": {
+                "text": "array"
+              },
+              "default": "[]",
+              "fieldName": "_expandedEdids"
+            },
+            {
+              "name": "_expandedLoading",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "fieldName": "_expandedLoading"
+            },
+            {
+              "name": "_expandedError",
+              "type": {
+                "text": "null"
+              },
+              "default": "null",
+              "fieldName": "_expandedError"
+            },
+            {
+              "name": "_expandedTotal",
+              "type": {
+                "text": "number"
+              },
+              "default": "0",
+              "fieldName": "_expandedTotal"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "results-table",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "ResultsTable",
+          "declaration": {
+            "name": "ResultsTable",
+            "module": "src/results-table.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "results-table",
+          "declaration": {
+            "name": "ResultsTable",
+            "module": "src/results-table.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/roaring.js",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "decodeRoaring",
+          "parameters": [
+            {
+              "name": "data",
+              "description": "Serialized bitmap data",
+              "type": {
+                "text": "Uint8Array"
+              }
+            }
+          ],
+          "description": "Decode a serialized Roaring bitmap and return an array of integers.",
+          "return": {
+            "type": {
+              "text": "number[]"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "decodeRoaringLimit",
+          "parameters": [
+            {
+              "name": "data",
+              "description": "Serialized bitmap data",
+              "type": {
+                "text": "Uint8Array"
+              }
+            },
+            {
+              "name": "limit",
+              "description": "Maximum results to return",
+              "type": {
+                "text": "number"
+              }
+            }
+          ],
+          "description": "Decode a Roaring bitmap and return first N results.\nMore efficient than decoding all then slicing.",
+          "return": {
+            "type": {
+              "text": "number[]"
+            }
+          }
+        },
+        {
+          "kind": "function",
+          "name": "countRoaring",
+          "parameters": [
+            {
+              "name": "data",
+              "description": "Serialized bitmap data",
+              "type": {
+                "text": "Uint8Array"
+              }
+            }
+          ],
+          "description": "Get the cardinality (count) of a Roaring bitmap without fully decoding.\nReads container metadata to sum cardinalities.",
+          "return": {
+            "type": {
+              "text": "number"
+            }
+          }
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "decodeRoaring",
+          "declaration": {
+            "name": "decodeRoaring",
+            "module": "src/roaring.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "decodeRoaringLimit",
+          "declaration": {
+            "name": "decodeRoaringLimit",
+            "module": "src/roaring.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "countRoaring",
+          "declaration": {
+            "name": "countRoaring",
+            "module": "src/roaring.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/search-tabs.js",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Search tabs component with traditional underline-style tabs.",
+          "name": "SearchTabs",
+          "members": [
+            {
+              "kind": "method",
+              "name": "_subscribeToProgress"
+            },
+            {
+              "kind": "method",
+              "name": "_getTabState",
+              "parameters": [
+                {
+                  "name": "tabId"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_onTabClick",
+              "parameters": [
+                {
+                  "name": "tabId"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_onSearch",
+              "parameters": [
+                {
+                  "name": "e"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_onInput",
+              "parameters": [
+                {
+                  "name": "e"
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_renderTab",
+              "parameters": [
+                {
+                  "name": "tab"
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "activeTab",
+              "privacy": "public",
+              "type": {
+                "text": "string"
+              },
+              "default": "'products'",
+              "attribute": "activeTab"
+            },
+            {
+              "kind": "field",
+              "name": "_loadingStates",
+              "privacy": "public",
+              "type": {
+                "text": "object"
+              },
+              "default": "{}",
+              "attribute": "_loadingStates"
+            },
+            {
+              "kind": "field",
+              "name": "_searchValue",
+              "privacy": "public",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "attribute": "_searchValue"
+            },
+            {
+              "kind": "field",
+              "name": "_unsubscribe",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "_debounceTimer",
+              "type": {
+                "text": "null"
+              },
+              "default": "null"
+            },
+            {
+              "kind": "field",
+              "name": "indexLoader",
+              "privacy": "public",
+              "type": {
+                "text": "object"
+              },
+              "attribute": "indexLoader"
+            }
+          ],
+          "events": [
+            {
+              "name": "tab-change",
+              "type": {
+                "text": "CustomEvent"
+              }
+            },
+            {
+              "name": "search",
+              "type": {
+                "text": "CustomEvent"
+              }
+            }
+          ],
+          "attributes": [
+            {
+              "name": "activeTab",
+              "type": {
+                "text": "string"
+              },
+              "default": "'products'",
+              "fieldName": "activeTab"
+            },
+            {
+              "name": "indexLoader",
+              "type": {
+                "text": "object"
+              },
+              "fieldName": "indexLoader"
+            },
+            {
+              "name": "_loadingStates",
+              "type": {
+                "text": "object"
+              },
+              "default": "{}",
+              "fieldName": "_loadingStates"
+            },
+            {
+              "name": "_searchValue",
+              "type": {
+                "text": "string"
+              },
+              "default": "''",
+              "fieldName": "_searchValue"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "search-tabs",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "SearchTabs",
+          "declaration": {
+            "name": "SearchTabs",
+            "module": "src/search-tabs.js"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "search-tabs",
+          "declaration": {
+            "name": "SearchTabs",
+            "module": "src/search-tabs.js"
+          }
+        }
+      ]
+    }
+  ]
+}
