@@ -21,45 +21,91 @@ export function isWasmSupported() {
 
 /**
  * Lazy-load the WASM module.
- * @returns {Promise<object>} Initialized Emscripten module
+ * @returns {Promise<object>} Initialized Emscripten module with FS access
  */
 export async function loadWasm() {
   if (wasmModule) return wasmModule;
   if (wasmLoading) return wasmLoading;
 
   wasmLoading = (async () => {
-    // Fetch and execute the Emscripten glue code
-    const response = await fetch(`${WASM_BASE_URL}edid-decode.js`);
-    const code = await response.text();
-
-    // Create module configuration
-    const moduleConfig = {
-      noInitialRun: true,
-      print: () => {}, // Will be overridden per-call
-      printErr: () => {},
-      locateFile: (path) => `${WASM_BASE_URL}${path}`,
-    };
-
-    // Execute the Emscripten module code
-    // The module assigns to a global 'Module' or returns it
-    const moduleFunc = new Function('Module', `
-      var f = Module;
-      ${code}
-      return f;
-    `);
-
-    const Module = moduleFunc(moduleConfig);
-
-    // Wait for WASM to be ready
-    await new Promise((resolve, reject) => {
-      Module.onRuntimeInitialized = resolve;
-      Module.onAbort = reject;
-      // Timeout after 10 seconds
-      setTimeout(() => reject(new Error('WASM initialization timeout')), 10000);
+    // Create a promise that resolves when the module is ready
+    let resolveReady;
+    const readyPromise = new Promise((resolve) => {
+      resolveReady = resolve;
     });
 
-    wasmModule = Module;
-    return Module;
+    // Output capture
+    let capturedOutput = '';
+    let capturedErrors = '';
+
+    // Set up Module configuration before loading the script
+    // The Emscripten script looks for window.Module
+    const moduleConfig = {
+      noInitialRun: true,
+      print: (text) => {
+        capturedOutput += text + '\n';
+      },
+      printErr: (text) => {
+        capturedErrors += text + '\n';
+      },
+      locateFile: (path) => {
+        return `${WASM_BASE_URL}${path}`;
+      },
+      onRuntimeInitialized: () => {
+        resolveReady();
+      },
+    };
+
+    // Store config globally for the Emscripten script to find
+    window.Module = moduleConfig;
+
+    // Load the Emscripten script via script tag
+    await new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = `${WASM_BASE_URL}edid-decode.js`;
+      script.onload = resolve;
+      script.onerror = () => reject(new Error('Failed to load edid-decode.js'));
+      document.head.appendChild(script);
+    });
+
+    // Wait for runtime initialization
+    await Promise.race([
+      readyPromise,
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('WASM initialization timeout')), 15000)
+      ),
+    ]);
+
+    // Get the module reference (Emscripten assigns to window.Module)
+    const Module = window.Module;
+
+    // Create wrapper object with output capture functionality
+    wasmModule = {
+      Module,
+      _capturedOutput: '',
+      _capturedErrors: '',
+
+      resetCapture() {
+        this._capturedOutput = '';
+        this._capturedErrors = '';
+        Module.print = (text) => {
+          this._capturedOutput += text + '\n';
+        };
+        Module.printErr = (text) => {
+          this._capturedErrors += text + '\n';
+        };
+      },
+
+      getOutput() {
+        return this._capturedOutput;
+      },
+
+      getErrors() {
+        return this._capturedErrors;
+      },
+    };
+
+    return wasmModule;
   })();
 
   return wasmLoading;
@@ -75,47 +121,49 @@ export async function decodeEdidWasm(edidData) {
     throw new Error('Invalid EDID data: must be at least 128 bytes');
   }
 
-  const Module = await loadWasm();
+  const wrapper = await loadWasm();
+  const Module = wrapper.Module;
 
-  // Capture output
-  let output = '';
-  let errors = '';
-
-  const originalPrint = Module.print;
-  const originalPrintErr = Module.printErr;
-
-  Module.print = (text) => {
-    output += text + '\n';
-  };
-  Module.printErr = (text) => {
-    errors += text + '\n';
-  };
+  // Reset output capture
+  wrapper.resetCapture();
 
   try {
     // Write EDID to virtual filesystem
+    // FS is a global created by Emscripten
+    const FS = Module.FS || window.FS;
+    if (!FS) {
+      throw new Error('Emscripten FS not available');
+    }
+
     const inputPath = '/input.bin';
-    Module.FS.writeFile(inputPath, edidData);
+    FS.writeFile(inputPath, edidData);
 
     // Call parse_edid
     Module.ccall('parse_edid', 'number', ['string'], [inputPath]);
 
     // Clean up
     try {
-      Module.FS.unlink(inputPath);
+      FS.unlink(inputPath);
     } catch (e) {
       // Ignore cleanup errors
     }
+
+    // Get output
+    let output = wrapper.getOutput();
+    const errors = wrapper.getErrors();
 
     // Combine output and errors
     if (errors && errors.trim()) {
       output += '\n--- Warnings/Errors ---\n' + errors;
     }
 
-    return output.trim();
-  } finally {
-    // Restore original print functions
-    Module.print = originalPrint;
-    Module.printErr = originalPrintErr;
+    return output.trim() || '(no output)';
+  } catch (err) {
+    const errors = wrapper.getErrors();
+    if (errors) {
+      throw new Error(`${err.message}\n${errors}`);
+    }
+    throw err;
   }
 }
 

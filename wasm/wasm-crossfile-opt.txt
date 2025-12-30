@@ -7,7 +7,7 @@ strip = 'emstrip'
 [built-in options]
 default_library = 'static'
 cpp_args = ['-Os', '-flto']
-cpp_link_args = ['-Os', '-flto', '--closure', '1', '-sENVIRONMENT=web']
+cpp_link_args = ['-Os', '-flto', '-sENVIRONMENT=web', '-sEXPORTED_RUNTIME_METHODS=FS,ccall,cwrap', '-sMODULARIZE=0']
 
 [host_machine]
 system = 'emscripten'
