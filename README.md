@@ -1,6 +1,6 @@
 # LinuxHW Browser
 
-A web-based browser for exploring EDID (Extended Display Identification Data) from the [LinuxHW Dataset](https://github.com/lokkju/linuxhw-datasets).
+Web components for browsing EDID (Extended Display Identification Data) from the [LinuxHW Dataset](https://github.com/lokkju/linuxhw-datasets).
 
 ## Features
 
@@ -10,13 +10,90 @@ A web-based browser for exploring EDID (Extended Display Identification Data) fr
 - View display characteristics (resolution, timing, color depth)
 - Works entirely in the browser (no server required)
 
-## Quick Start
+## Installation
 
-### Option 1: Use hosted version
+```bash
+npm install linuxhw-browser
+```
 
-Visit the [live demo](https://lokkju.github.io/linuxhw-browser/) (coming soon)
+Or use via CDN:
 
-### Option 2: Run locally
+```html
+<script type="module">
+  import 'https://esm.run/linuxhw-browser';
+</script>
+```
+
+## Usage
+
+### Full Browser Application
+
+```html
+<script type="module">
+  import 'linuxhw-browser';
+</script>
+
+<edid-browser data-base-url="https://raw.githubusercontent.com/lokkju/linuxhw-datasets/main/data/"></edid-browser>
+```
+
+### Standalone EDID Viewer
+
+The `<edid-viewer>` component can be used independently to display any EDID data:
+
+```html
+<script type="module">
+  import 'linuxhw-browser/edid-viewer.js';
+</script>
+
+<edid-viewer id="viewer"></edid-viewer>
+
+<script type="module">
+  const viewer = document.querySelector('#viewer');
+  viewer.edidData = new Uint8Array([/* EDID bytes */]);
+  viewer.hash = '00FF1234ABCD';
+</script>
+```
+
+### Programmatic EDID Decoding
+
+Use the decoder directly without any UI:
+
+```javascript
+import { decodeEdid } from 'linuxhw-browser';
+
+const edidBytes = new Uint8Array([/* 128+ bytes */]);
+const decoded = decodeEdid(edidBytes);
+
+console.log(decoded.manufacturerId); // e.g., "SAM"
+console.log(decoded.monitorName);    // e.g., "SyncMaster"
+console.log(decoded.preferredResolution); // { width: 1920, height: 1080, ... }
+```
+
+### Selective Imports
+
+Import only what you need:
+
+```javascript
+// Just the viewer component
+import 'linuxhw-browser/edid-viewer.js';
+
+// Just the decoder utilities
+import { decodeEdid, EdidDecoder } from 'linuxhw-browser/edid-decoder.js';
+
+// Data loaders for RoaringBuckets format
+import { BucketLoader, IndexLoader } from 'linuxhw-browser';
+```
+
+## Components
+
+| Component | Tag Name | Description |
+|-----------|----------|-------------|
+| EdidBrowser | `<edid-browser>` | Full application with search and viewer |
+| EdidViewer | `<edid-viewer>` | Standalone EDID display viewer |
+| EdidSelector | `<edid-selector>` | Search interface component |
+| EdidDetail | `<edid-detail>` | Detail panel wrapper |
+
+## Quick Start (Development)
 
 ```bash
 # Clone the repository
@@ -31,45 +108,19 @@ npx serve .
 
 Then open http://localhost:8080 in your browser.
 
-### Data Source
+## Data Format
 
-The browser reads RoaringBuckets format files from a data directory. Configure the data location:
+The browser reads RoaringBuckets format files. Generate data using [linuxhw-datasets](https://github.com/lokkju/linuxhw-datasets):
 
-```html
-<edid-browser data-base-url="https://raw.githubusercontent.com/lokkju/linuxhw-datasets/main/"></edid-browser>
-```
-
-Generate data files using [linuxhw-datasets](https://github.com/lokkju/linuxhw-datasets):
 ```bash
 uv run edid-build generate
 ```
 
-## Technology Stack
+## Browser Support
 
-- **[Lit](https://lit.dev/)** - Lightweight web components library
-- **[RoaringBitmaps](https://roaringbitmap.org/)** - Compressed bitmap indexes for fast search
-- **Pure ESM** - No build step required, uses browser-native import maps
-
-## Project Structure
-
-```
-linuxhw-browser/
-├── index.html          # Entry point with import maps
-├── style.css           # Global styles
-├── test-e2e.mjs        # End-to-end tests
-└── src/
-    ├── edid-browser.js     # Main wrapper component
-    ├── edid-selector.js    # Search interface
-    ├── edid-detail.js      # Detail view panel
-    ├── edid-decoder.js     # EDID binary parser
-    ├── edid-viewer.js      # Display properties viewer
-    ├── edid-utils.js       # Utility functions
-    ├── index-loader.js     # RoaringBuckets index loader
-    ├── bucket-loader.js    # Bucket data loader
-    ├── roaring.js          # Roaring bitmap decoder
-    ├── search-tabs.js      # Search tab UI
-    └── results-table.js    # Virtualized results list
-```
+- Chrome/Edge 88+
+- Firefox 78+
+- Safari 14+
 
 ## Related Projects
 
@@ -78,4 +129,7 @@ linuxhw-browser/
 
 ## License
 
-[Polyform Shield 1.0.0](LICENSE)
+Dual licensed under your choice of:
+
+- [Polyform Shield 1.0.0](LICENSE) - Permissive with non-compete clause
+- [AGPL-3.0-or-later](LICENSE-AGPL) - Open source copyleft
