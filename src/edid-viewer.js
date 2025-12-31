@@ -27,6 +27,7 @@ export class EdidViewer extends LitElement {
     _wasmOutput: { type: String, state: true },
     _wasmLoading: { type: Boolean, state: true },
     _wasmError: { type: String, state: true },
+    _wasmCopied: { type: Boolean, state: true },
   };
 
   static styles = css`
@@ -446,6 +447,7 @@ export class EdidViewer extends LitElement {
       height: 100%;
       display: flex;
       flex-direction: column;
+      gap: 0.5rem;
     }
 
     .edid-decode-output pre {
@@ -535,6 +537,7 @@ export class EdidViewer extends LitElement {
     this._wasmOutput = null;
     this._wasmLoading = false;
     this._wasmError = null;
+    this._wasmCopied = false;
   }
 
   willUpdate(changedProps) {
@@ -608,6 +611,16 @@ export class EdidViewer extends LitElement {
 
     return html`
       <div class="edid-decode-output">
+        <div class="hex-header">
+          <span class="hex-label">edid-decode output</span>
+          <button class="action-btn" @click=${this._copyWasmOutput} ?data-copied=${this._wasmCopied}>
+            ${this._wasmCopied
+              ? html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>`
+              : html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`
+            }
+            ${this._wasmCopied ? 'Copied!' : 'Copy'}
+          </button>
+        </div>
         <pre>${this._wasmOutput}</pre>
       </div>
     `;
@@ -1110,6 +1123,17 @@ export class EdidViewer extends LitElement {
       await navigator.clipboard.writeText(hexString);
       this._copied = true;
       setTimeout(() => { this._copied = false; }, 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  }
+
+  async _copyWasmOutput() {
+    if (!this._wasmOutput) return;
+    try {
+      await navigator.clipboard.writeText(this._wasmOutput);
+      this._wasmCopied = true;
+      setTimeout(() => { this._wasmCopied = false; }, 2000);
     } catch (err) {
       console.error('Failed to copy:', err);
     }
