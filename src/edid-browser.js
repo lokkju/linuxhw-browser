@@ -544,16 +544,16 @@ export class EdidBrowser extends LitElement {
     return html`
       <div class="stats-pane">
         <div class="stat-item">
-          <span class="stat-label">Data Loaded</span>
+          <span class="stat-label">Transfer</span>
           <span class="stat-value">${formatBytes(s.totalBytes)}</span>
         </div>
         <div class="stat-item">
-          <span class="stat-label">Index Files</span>
-          <span class="stat-value">${s.indexFiles} (${formatBytes(s.indexBytes)})</span>
+          <span class="stat-label">Indexes</span>
+          <span class="stat-value">${s.indexFiles} files</span>
         </div>
         <div class="stat-item">
-          <span class="stat-label">Bucket Files</span>
-          <span class="stat-value">${s.bucketFiles} (${formatBytes(s.bucketBytes)})</span>
+          <span class="stat-label">Buckets</span>
+          <span class="stat-value">${s.bucketFiles} files</span>
         </div>
         <div class="stat-item">
           <span class="stat-label">Load Time</span>
