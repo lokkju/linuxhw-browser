@@ -459,9 +459,8 @@ export class EdidViewer extends LitElement {
       font-family: ui-monospace, monospace;
       font-size: 0.75rem;
       line-height: 1.5;
+      white-space: pre;
       overflow: auto;
-      white-space: pre-wrap;
-      word-wrap: break-word;
     }
 
     .loading-indicator {
