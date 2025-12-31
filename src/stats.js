@@ -71,6 +71,16 @@ class StatsService {
     this._notify();
   }
 
+  /** Get info for a specific index file */
+  getIndexInfo(name) {
+    return this.indexFiles.get(name) || null;
+  }
+
+  /** Get info for a specific bucket file */
+  getBucketInfo(prefix) {
+    return this.bucketFiles.get(prefix) || null;
+  }
+
   /** Get aggregated stats */
   getStats() {
     let indexBytes = 0;

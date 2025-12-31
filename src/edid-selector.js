@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import { IndexLoader } from './index-loader.js';
 import { BucketLoader } from './bucket-loader.js';
+import { stats } from './stats.js';
 import './search-tabs.js';
 import './results-table.js';
 
@@ -90,19 +91,21 @@ export class EdidSelector extends LitElement {
 
     for (const name of loadOrder) {
       try {
-        this._emitStatus(`Preloading ${name} index...`, 'loading');
+        this._emitStatus(`Loading ${name} index...`, 'loading');
         const index = await this._indexLoader.load(name);
+        const info = stats.getIndexInfo(name);
+        const sizeStr = info ? ` (${this._formatBytes(info.bytes)})` : '';
 
         // Show initial results for active tab
         if (name === this.activeTab) {
           this._results = index.entries;
-          this._emitStatus(`Showing ${index.entries.length} ${name}`, 'success');
+          this._emitStatus(`Loaded ${name}${sizeStr} - showing ${index.entries.length} entries`, 'success');
         } else {
-          this._emitStatus(`Loaded ${name} index`, 'success');
+          this._emitStatus(`Loaded ${name} index${sizeStr}`, 'success');
         }
       } catch (err) {
         console.warn(`Failed to preload ${name}:`, err);
-        this._emitStatus(`Failed to preload ${name}: ${err.message}`, 'warning');
+        this._emitStatus(`Failed to load ${name}: ${err.message}`, 'warning');
       }
     }
     this._emitStatus('All indexes loaded', 'success');
@@ -114,6 +117,12 @@ export class EdidSelector extends LitElement {
       bubbles: true,
       composed: true,
     }));
+  }
+
+  _formatBytes(bytes) {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
   }
 
   _onTabChange(e) {
@@ -198,11 +207,13 @@ export class EdidSelector extends LitElement {
     }
 
     this._isSearching = true;
-    this._emitStatus(`Searching for hashes starting with "${prefix}"...`, 'loading');
+    this._emitStatus(`Loading bucket ${prefix.slice(0, 2)}...`, 'loading');
 
     try {
       const bucketPrefix = parseInt(prefix.slice(0, 2), 16);
       const bucket = await this._bucketLoader.load(bucketPrefix);
+      const info = stats.getBucketInfo(bucketPrefix);
+      const sizeStr = info ? ` (${this._formatBytes(info.bytes)})` : '';
 
       const matches = [];
       for (let i = 0; i < bucket.entryCount; i++) {
@@ -218,7 +229,7 @@ export class EdidSelector extends LitElement {
 
       this._results = matches;
       const moreText = matches.length >= 100 ? '100+' : matches.length;
-      this._emitStatus(`Found ${moreText} hashes starting with "${prefix}"`, 'success');
+      this._emitStatus(`Loaded bucket ${prefix.slice(0, 2)}${sizeStr} - found ${moreText} matches`, 'success');
     } catch (err) {
       console.error('Hash search failed:', err);
       this._results = [];
