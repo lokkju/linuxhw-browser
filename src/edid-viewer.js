@@ -676,7 +676,7 @@ export class EdidViewer extends LitElement {
       ${this.edidData ? html`
         <div class="hex-container compact">
           <div class="hex-header">
-            <span class="hex-label">${this.edidData.length} bytes</span>
+            <span class="hex-label">${this.hash} - ${this.edidData.length} bytes</span>
             <div class="hex-actions">
               ${this.githubUrl ? html`
                 <a class="action-btn" href=${this.githubUrl} target="_blank" rel="noopener">
@@ -750,10 +750,6 @@ export class EdidViewer extends LitElement {
     const d = this._decoded;
     return html`
       <div class="grid">
-        ${this.hash ? html`
-          <span class="label">LinuxHW ID</span>
-          <span class="value">${this.hash}</span>
-        ` : ''}
         <span class="label">Manufacturer</span>
         <span class="value">${d.manufacturerId || '?'}</span>
         <span class="label">Product Code</span>
