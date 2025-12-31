@@ -125,19 +125,24 @@ export async function decodeEdidWasm(edidData) {
   wrapper.resetCapture();
 
   try {
-    // Get pointer to static input buffer in WASM memory
-    const bufferPtr = Module.ccall('get_edid_buffer', 'number', [], []);
-    const bufferSize = Module.ccall('get_edid_buffer_size', 'number', [], []);
-
-    if (edidData.length > bufferSize) {
-      throw new Error(`EDID data too large: ${edidData.length} > ${bufferSize}`);
+    // Write EDID to virtual filesystem
+    const FS = Module.FS || window.FS;
+    if (!FS) {
+      throw new Error('Emscripten FS not available');
     }
 
-    // Copy EDID data directly to the static buffer
-    Module.HEAPU8.set(edidData, bufferPtr);
+    const inputPath = '/input.bin';
+    FS.writeFile(inputPath, edidData);
 
-    // Call parse_edid_buffer with just the length
-    const result = Module.ccall('parse_edid_buffer', 'number', ['number'], [edidData.length]);
+    // Call parse_edid
+    Module.ccall('parse_edid', 'number', ['string'], [inputPath]);
+
+    // Clean up
+    try {
+      FS.unlink(inputPath);
+    } catch (e) {
+      // Ignore cleanup errors
+    }
 
     // Get output
     let output = wrapper.getOutput();
@@ -146,10 +151,6 @@ export async function decodeEdidWasm(edidData) {
     // Combine output and errors
     if (errors && errors.trim()) {
       output += '\n--- Warnings/Errors ---\n' + errors;
-    }
-
-    if (result !== 0 && !output.trim()) {
-      throw new Error('EDID decode failed');
     }
 
     return output.trim() || '(no output)';
