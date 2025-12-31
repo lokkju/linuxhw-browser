@@ -138,8 +138,8 @@ export async function decodeEdidWasm(edidData) {
     const inputPath = '/input.bin';
     FS.writeFile(inputPath, edidData);
 
-    // Call _parse_edid (Emscripten exports with underscore prefix)
-    Module.ccall('_parse_edid', 'number', ['string'], [inputPath]);
+    // Call parse_edid (ccall uses name without underscore prefix)
+    Module.ccall('parse_edid', 'number', ['string'], [inputPath]);
 
     // Clean up
     try {

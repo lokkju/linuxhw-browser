@@ -7,7 +7,7 @@ strip = 'emstrip'
 [built-in options]
 default_library = 'static'
 cpp_args = ['-Os', '-flto']
-cpp_link_args = ['-Os', '-flto', '-sENVIRONMENT=web', '-sEXPORTED_RUNTIME_METHODS=["FS","ccall","cwrap"]', '-sFORCE_FILESYSTEM=1', '-sMODULARIZE=0', '--post-js=/tmp/post.js']
+cpp_link_args = ['-Os', '-flto', '-sENVIRONMENT=web', '-sEXPORTED_FUNCTIONS=["_parse_edid","_main"]', '-sEXPORTED_RUNTIME_METHODS=["FS","ccall","cwrap"]', '-sFORCE_FILESYSTEM=1', '-sMODULARIZE=0', '--post-js=/tmp/post.js']
 
 [host_machine]
 system = 'emscripten'
