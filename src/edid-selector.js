@@ -238,7 +238,8 @@ export class EdidSelector extends LitElement {
   }
 
   _onStatus(e) {
-    // Re-emit status from child components
+    // Stop original event and re-emit to avoid duplicates
+    e.stopPropagation();
     this.dispatchEvent(new CustomEvent('status', {
       detail: e.detail,
       bubbles: true,

@@ -82,7 +82,8 @@ export class EdidDetail extends LitElement {
   }
 
   _onStatus(e) {
-    // Re-emit status from edid-viewer
+    // Stop original event and re-emit to avoid duplicates
+    e.stopPropagation();
     this.dispatchEvent(new CustomEvent('status', {
       detail: e.detail,
       bubbles: true,
