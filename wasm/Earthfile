@@ -1,7 +1,7 @@
 VERSION 0.8
 
 # Build edid-decode as WebAssembly using Emscripten
-# Source: https://git.linuxtv.org/edid-decode.git (mirror: oe-mirrors/edid-decode)
+# Source: https://git.linuxtv.org/v4l-utils.git (via GitHub mirror gjasny/v4l-utils)
 
 FROM emscripten/emsdk:3.1.51
 
@@ -11,12 +11,12 @@ build:
     # Install meson and ninja
     RUN pip3 install meson ninja
 
-    # Clone edid-decode (using GitHub mirror since git.linuxtv.org can be unreliable)
-    GIT CLONE --branch master https://github.com/oe-mirrors/edid-decode.git edid-decode
-    WORKDIR /build/edid-decode
+    # Clone v4l-utils (using GitHub mirror for reliability)
+    GIT CLONE --branch master https://github.com/gjasny/v4l-utils.git v4l-utils
+    WORKDIR /build/v4l-utils/utils/edid-decode
 
-    # Configure with meson using emscripten cross-file
-    RUN meson setup build-wasm \
+    # Configure with meson using emscripten cross-file (build from emscripten subdir)
+    RUN meson setup build-wasm emscripten \
         --cross-file ./emscripten/wasm-crossfile.txt \
         --prefix=/build/install-wasm \
         --buildtype=release
@@ -40,28 +40,28 @@ build-optimized:
     # Install meson and ninja
     RUN pip3 install meson ninja
 
-    # Clone edid-decode
-    GIT CLONE --branch master https://github.com/oe-mirrors/edid-decode.git edid-decode
-    WORKDIR /build/edid-decode
+    # Clone v4l-utils (using GitHub mirror for reliability)
+    GIT CLONE --branch master https://github.com/gjasny/v4l-utils.git v4l-utils
+    WORKDIR /build/v4l-utils/utils/edid-decode
 
-    # Copy optimized cross-file, post.js, and new function
+    # Copy optimized cross-file and our buffer-based entry point
     COPY wasm-crossfile-opt.txt /tmp/wasm-crossfile-opt.txt
     COPY post.js /tmp/post.js
     COPY parse_edid_buffer.cpp /tmp/parse_edid_buffer.cpp
 
-    # Insert buffer-based entry point before final #endif
+    # Insert buffer-based entry point before final #endif in edid-decode.cpp
     RUN head -n -1 edid-decode.cpp > /tmp/edid-decode-patched.cpp && \
         cat /tmp/parse_edid_buffer.cpp >> /tmp/edid-decode-patched.cpp && \
         echo "" >> /tmp/edid-decode-patched.cpp && \
         echo "#endif" >> /tmp/edid-decode-patched.cpp && \
         mv /tmp/edid-decode-patched.cpp edid-decode.cpp
 
-    # Patch meson.build to export our buffer functions (overrides upstream defaults)
-    RUN sed -i "s/-sEXPORTED_FUNCTIONS=_parse_edid/-sEXPORTED_FUNCTIONS=[\"_parse_edid_buffer\",\"_get_edid_buffer\",\"_get_edid_buffer_size\"]/" meson.build && \
-        sed -i "s/-sEXPORTED_RUNTIME_METHODS=ccall,cwrap/-sEXPORTED_RUNTIME_METHODS=[\"ccall\"]/" meson.build
+    # Patch emscripten/meson.build to export our buffer functions
+    RUN sed -i "s/-sEXPORTED_FUNCTIONS=_parse_edid/-sEXPORTED_FUNCTIONS=[\"_parse_edid_buffer\",\"_get_edid_buffer\",\"_get_edid_buffer_size\"]/" emscripten/meson.build && \
+        sed -i "s/-sEXPORTED_RUNTIME_METHODS=ccall,cwrap/-sEXPORTED_RUNTIME_METHODS=[\"ccall\"]/" emscripten/meson.build
 
-    # Configure with optimized settings
-    RUN meson setup build-wasm \
+    # Configure with optimized settings (build from emscripten subdir)
+    RUN meson setup build-wasm emscripten \
         --cross-file /tmp/wasm-crossfile-opt.txt \
         --prefix=/build/install-wasm \
         --buildtype=release
