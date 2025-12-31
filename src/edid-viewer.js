@@ -469,13 +469,18 @@ export class EdidViewer extends LitElement {
     .tab-badge {
       display: inline-block;
       padding: 0.125rem 0.25rem;
-      background: var(--color-accent, #e94560);
+      background: var(--color-text-muted, #888);
       color: white;
       font-size: 0.5rem;
       border-radius: 2px;
       margin-left: 0.25rem;
       text-transform: uppercase;
       vertical-align: super;
+      transition: background 0.2s;
+    }
+
+    .tab-badge[data-loaded] {
+      background: #4ade80;
     }
   `;
 
@@ -603,7 +608,7 @@ export class EdidViewer extends LitElement {
             class="tab"
             data-active=${this._activeTab === 'edid-decode'}
             @click=${() => this._onEdidDecodeTab()}
-          >edid-decode<span class="tab-badge">wasm</span></button>
+          >edid-decode<span class="tab-badge" ?data-loaded=${!!this._wasmOutput}>wasm</span></button>
         ` : ''}
       </div>
       <div class="content">
