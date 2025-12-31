@@ -7,6 +7,8 @@
  *   Strings section: UTF-8 packed
  *   Bitmaps section: Roaring bitmaps packed
  */
+import { stats } from './stats.js';
+
 export class IndexLoader {
   constructor(baseUrl) {
     this.baseUrl = baseUrl;
@@ -71,6 +73,7 @@ export class IndexLoader {
 
   async _fetchAndParse(name) {
     const url = `${this.baseUrl}metadata/${name}.idx`;
+    const startTime = performance.now();
 
     const response = await fetch(url);
     if (!response.ok) {
@@ -100,6 +103,9 @@ export class IndexLoader {
       buffer.set(chunk, offset);
       offset += chunk.length;
     }
+
+    const loadTime = performance.now() - startTime;
+    stats.recordIndexLoad(name, loaded, loadTime);
 
     return new ParsedIndex(name, buffer);
   }

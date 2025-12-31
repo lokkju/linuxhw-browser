@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import './edid-selector.js';
 import './edid-detail.js';
+import { stats } from './stats.js';
 
 /**
  * Main EDID browser component - wrapper that coordinates selector and viewer.
@@ -19,6 +20,7 @@ export class EdidBrowser extends LitElement {
     _layoutMode: { type: String, state: true },
     _showDetail: { type: Boolean, state: true },
     _manifest: { type: Object, state: true },
+    _stats: { type: Object, state: true },
   };
 
   static styles = css`
@@ -349,6 +351,35 @@ export class EdidBrowser extends LitElement {
     .status-log-item[data-type="loading"] .status-log-type {
       color: var(--color-text-muted);
     }
+
+    .stats-pane {
+      padding: 0.5rem 1rem;
+      background: var(--color-primary);
+      border-bottom: 1px solid var(--color-border);
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 0.5rem;
+      flex-shrink: 0;
+    }
+
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.125rem;
+    }
+
+    .stat-label {
+      font-size: 0.5625rem;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-value {
+      font-size: 0.875rem;
+      font-family: var(--font-mono);
+      color: var(--color-text);
+    }
   `;
 
   constructor() {
@@ -362,6 +393,8 @@ export class EdidBrowser extends LitElement {
     this._showDetail = false;
     this._resizeObserver = null;
     this._manifest = null;
+    this._stats = stats.getStats();
+    this._statsUnsubscribe = null;
   }
 
   connectedCallback() {
@@ -369,6 +402,11 @@ export class EdidBrowser extends LitElement {
 
     // Set default layout
     this.setAttribute('layout', 'wide');
+
+    // Subscribe to stats updates
+    this._statsUnsubscribe = stats.onChange(newStats => {
+      this._stats = newStats;
+    });
 
     // Fetch manifest for upstream info
     this._loadManifest();
@@ -393,6 +431,10 @@ export class EdidBrowser extends LitElement {
     if (this._resizeObserver) {
       this._resizeObserver.disconnect();
       this._resizeObserver = null;
+    }
+    if (this._statsUnsubscribe) {
+      this._statsUnsubscribe();
+      this._statsUnsubscribe = null;
     }
   }
 
@@ -487,6 +529,40 @@ export class EdidBrowser extends LitElement {
     return count.toLocaleString();
   }
 
+  _renderStatsPane() {
+    const s = this._stats;
+    const formatBytes = (bytes) => {
+      if (bytes < 1024) return `${bytes} B`;
+      if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+      return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+    };
+    const formatTime = (ms) => {
+      if (ms < 1000) return `${Math.round(ms)}ms`;
+      return `${(ms / 1000).toFixed(1)}s`;
+    };
+
+    return html`
+      <div class="stats-pane">
+        <div class="stat-item">
+          <span class="stat-label">Data Loaded</span>
+          <span class="stat-value">${formatBytes(s.totalBytes)}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Index Files</span>
+          <span class="stat-value">${s.indexFiles} (${formatBytes(s.indexBytes)})</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Bucket Files</span>
+          <span class="stat-value">${s.bucketFiles} (${formatBytes(s.bucketBytes)})</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Load Time</span>
+          <span class="stat-value">${formatTime(s.indexTotalTime + s.bucketTotalTime)}</span>
+        </div>
+      </div>
+    `;
+  }
+
   render() {
     const count = this._manifest?.totalCount;
 
@@ -522,6 +598,7 @@ export class EdidBrowser extends LitElement {
           <button class="status-log-close" @click=${this._toggleStatusLog}>▼</button>
           <span>Status Log (${this._statusHistory.length} messages)</span>
         </div>
+        ${this._renderStatsPane()}
         <div class="status-log-content">
           <ul class="status-log-list">
             ${this._statusHistory.map(entry => html`

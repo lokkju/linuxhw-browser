@@ -13,6 +13,7 @@
  */
 
 import { decodeVendorCode, decodeProductCode, getDisplayType } from './edid-utils.js';
+import { stats } from './stats.js';
 
 const BUCKET_MAGIC = 0x42494445; // "EDIB" little-endian
 
@@ -100,6 +101,7 @@ export class BucketLoader {
   async _fetchAndParse(prefix) {
     const hex = prefix.toString(16).padStart(2, '0');
     const url = `${this.baseUrl}buckets/${hex}.bin`;
+    const startTime = performance.now();
 
     const response = await fetch(url);
     if (!response.ok) {
@@ -107,6 +109,9 @@ export class BucketLoader {
     }
 
     const buffer = await response.arrayBuffer();
+    const loadTime = performance.now() - startTime;
+    stats.recordBucketLoad(prefix, buffer.byteLength, loadTime);
+
     return new ParsedBucket(prefix, new Uint8Array(buffer));
   }
 
