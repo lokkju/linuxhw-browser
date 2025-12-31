@@ -23,10 +23,6 @@ export class EdidDetail extends LitElement {
       flex-direction: column;
       flex: 1;
       min-height: 0;
-      border: 1px solid var(--color-border, #2a2a4e);
-      border-radius: var(--radius, 4px);
-      overflow: hidden;
-      margin-bottom: 0.75rem;
     }
 
     edid-viewer {
@@ -38,10 +34,13 @@ export class EdidDetail extends LitElement {
       display: flex;
       align-items: center;
       justify-content: center;
-      height: 100%;
+      flex: 1;
       color: var(--color-text-muted, #888);
       font-size: 0.875rem;
       background: var(--color-surface, #16213e);
+      border: 1px solid var(--color-border, #2a2a4e);
+      border-radius: var(--radius, 4px);
+      margin-bottom: 0.75rem;
     }
   `;
 

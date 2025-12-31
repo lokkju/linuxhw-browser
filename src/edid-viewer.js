@@ -40,8 +40,7 @@ export class EdidViewer extends LitElement {
     }
 
     .header {
-      padding: 0.75rem 1rem;
-      border-bottom: 1px solid var(--color-border, #2a2a4e);
+      padding: 0.5rem 0;
       display: flex;
       align-items: center;
       gap: 0.75rem;
@@ -112,20 +111,34 @@ export class EdidViewer extends LitElement {
       font-size: 0.6875rem;
     }
 
+    .tabs-section {
+      flex-shrink: 0;
+      margin-bottom: 0.75rem;
+    }
+
+    .tabs-label {
+      color: var(--color-text-muted, #888);
+      font-size: 0.6875rem;
+      padding: 0.25rem 0;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
     .tabs {
       display: flex;
       border-bottom: 1px solid var(--color-border, #2a2a4e);
-      flex-shrink: 0;
     }
 
     .tab {
-      padding: 0.5rem 1rem;
+      padding: 0.5rem 0.75rem;
       border: none;
       background: transparent;
       color: var(--color-text-muted, #888);
-      font-size: 0.8125rem;
+      font-size: 0.75rem;
       cursor: pointer;
-      position: relative;
+      white-space: nowrap;
+      transition: color 0.15s, background 0.15s;
+      border-radius: 4px 4px 0 0;
     }
 
     .tab:hover {
@@ -134,23 +147,19 @@ export class EdidViewer extends LitElement {
 
     .tab[data-active="true"] {
       color: var(--color-text, #eee);
-    }
-
-    .tab[data-active="true"]::after {
-      content: '';
-      position: absolute;
-      bottom: -1px;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background: var(--color-accent, #e94560);
+      background: rgba(255, 255, 255, 0.08);
+      text-shadow: 0 0 8px var(--color-accent, #e94560);
     }
 
     .content {
       flex: 1;
+      min-height: 0;
       overflow-y: auto;
       padding: 1rem;
-      min-height: 0;
+      border: 1px solid var(--color-border, #2a2a4e);
+      border-radius: var(--radius, 4px);
+      background: var(--color-bg, #1a1a2e);
+      margin-bottom: 0.75rem;
     }
 
     .empty {
@@ -599,19 +608,22 @@ export class EdidViewer extends LitElement {
       <div class="header">
         <button class="back-btn" @click=${this._onBack}>&#9664; Back</button>
       </div>
-      <div class="tabs">
-        <button
-          class="tab"
-          data-active=${this._activeTab === 'decoded'}
-          @click=${() => this._activeTab = 'decoded'}
-        >Summary</button>
-        ${this._wasmSupported ? html`
+      <div class="tabs-section">
+        <span class="tabs-label">View</span>
+        <div class="tabs">
           <button
             class="tab"
-            data-active=${this._activeTab === 'edid-decode'}
-            @click=${() => this._onEdidDecodeTab()}
-          >edid-decode<span class="tab-badge" ?data-loaded=${!!this._wasmOutput}>wasm</span></button>
-        ` : ''}
+            data-active=${this._activeTab === 'decoded'}
+            @click=${() => this._activeTab = 'decoded'}
+          >Summary</button>
+          ${this._wasmSupported ? html`
+            <button
+              class="tab"
+              data-active=${this._activeTab === 'edid-decode'}
+              @click=${() => this._onEdidDecodeTab()}
+            >edid-decode<span class="tab-badge" ?data-loaded=${!!this._wasmOutput}>wasm</span></button>
+          ` : ''}
+        </div>
       </div>
       <div class="content">
         ${this._activeTab === 'decoded' ? this._renderDecoded()
