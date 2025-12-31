@@ -95,6 +95,39 @@ export class EdidViewer extends LitElement {
       height: 14px;
     }
 
+    .source-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.5rem 0.75rem;
+      margin-bottom: 0.75rem;
+      color: var(--color-text-muted, #888);
+      text-decoration: none;
+      font-size: 0.8125rem;
+      border: 1px solid var(--color-border, #2a2a4e);
+      border-radius: var(--radius, 4px);
+      transition: all 0.15s;
+    }
+
+    .source-link:hover {
+      color: var(--color-text, #eee);
+      border-color: var(--color-text-muted, #888);
+    }
+
+    .source-link .github-icon {
+      width: 16px;
+      height: 16px;
+    }
+
+    .hex-container.compact {
+      margin-bottom: 0.75rem;
+    }
+
+    .hex-container.compact .hex-textarea {
+      height: 120px;
+      font-size: 0.6875rem;
+    }
+
     .tabs {
       display: flex;
       border-bottom: 1px solid var(--color-border, #2a2a4e);
@@ -469,9 +502,9 @@ export class EdidViewer extends LitElement {
     this._decoded = null;
     this._expandedSections = {
       identification: true,
-      display: true,
-      manufacture: true,
-      edidInfo: true,
+      display: false,
+      manufacture: false,
+      edidInfo: false,
       timings: false,
       audio: false,
       video: false,
@@ -572,23 +605,13 @@ export class EdidViewer extends LitElement {
     return html`
       <div class="header">
         <button class="back-btn" @click=${this._onBack}>&#9664; Back</button>
-        <span class="header-title">${this.hash || 'EDID Data'}</span>
-        <span class="header-spacer"></span>
-        ${this.githubUrl ? html`
-          <a class="github-link" href=${this.githubUrl} target="_blank" rel="noopener">
-            <svg class="github-icon" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
-            </svg>
-            Source
-          </a>
-        ` : ''}
       </div>
       <div class="tabs">
         <button
           class="tab"
           data-active=${this._activeTab === 'decoded'}
           @click=${() => this._activeTab = 'decoded'}
-        >Decoded</button>
+        >Summary</button>
         ${this._wasmSupported ? html`
           <button
             class="tab"
@@ -596,21 +619,10 @@ export class EdidViewer extends LitElement {
             @click=${() => this._onEdidDecodeTab()}
           >edid-decode<span class="tab-badge">wasm</span></button>
         ` : ''}
-        <button
-          class="tab"
-          data-active=${this._activeTab === 'hex'}
-          @click=${() => this._activeTab = 'hex'}
-        >EDID Hex</button>
-        <button
-          class="tab"
-          data-active=${this._activeTab === 'hex-spaced'}
-          @click=${() => this._activeTab = 'hex-spaced'}
-        >edid-decode Hex</button>
       </div>
       <div class="content">
         ${this._activeTab === 'decoded' ? this._renderDecoded()
-          : this._activeTab === 'edid-decode' ? this._renderEdidDecode()
-          : this._renderHex(this._activeTab === 'hex-spaced')}
+          : this._renderEdidDecode()}
       </div>
     `;
   }
@@ -622,7 +634,37 @@ export class EdidViewer extends LitElement {
 
     const issues = this._getDecodingIssues();
 
+    const hexString = this._getHexString(false);
+
     return html`
+      ${this.githubUrl ? html`
+        <a class="source-link" href=${this.githubUrl} target="_blank" rel="noopener">
+          <svg class="github-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+          </svg>
+          View source on GitHub
+        </a>
+      ` : ''}
+
+      ${this.edidData ? html`
+        <div class="hex-container compact">
+          <div class="hex-header">
+            <span class="hex-label">${this.edidData.length} bytes</span>
+            <button class="copy-btn" @click=${() => this._copyHex(false)} ?data-copied=${this._copied}>
+              <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                ${this._copied
+                  ? html`<polyline points="20 6 9 17 4 12"></polyline>`
+                  : html`<rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                         <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>`
+                }
+              </svg>
+              ${this._copied ? 'Copied!' : 'Copy'}
+            </button>
+          </div>
+          <textarea class="hex-textarea" readonly .value=${hexString}></textarea>
+        </div>
+      ` : ''}
+
       ${issues.length > 0 ? html`
         <div class="warning">
           <strong>Decoding Issues:</strong>
@@ -675,7 +717,7 @@ export class EdidViewer extends LitElement {
     return html`
       <div class="grid">
         ${this.hash ? html`
-          <span class="label">MD5 Hash</span>
+          <span class="label">LinuxHW ID</span>
           <span class="value">${this.hash}</span>
         ` : ''}
         <span class="label">Manufacturer</span>
