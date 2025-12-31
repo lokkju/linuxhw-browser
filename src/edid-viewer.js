@@ -637,13 +637,10 @@ export class EdidViewer extends LitElement {
                 </a>
               ` : ''}
               <button class="action-btn" @click=${() => this._copyHex(false)} ?data-copied=${this._copied}>
-                <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  ${this._copied
-                    ? html`<polyline points="20 6 9 17 4 12"></polyline>`
-                    : html`<rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                           <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>`
-                  }
-                </svg>
+                ${this._copied
+                  ? html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>`
+                  : html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`
+                }
                 ${this._copied ? 'Copied!' : 'Copy'}
               </button>
             </div>
@@ -1093,13 +1090,10 @@ export class EdidViewer extends LitElement {
         <div class="hex-header">
           <span class="hex-label">${this.edidData.length} bytes, 16 bytes/line</span>
           <button class="action-btn" @click=${() => this._copyHex(spaced)} ?data-copied=${this._copied}>
-            <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              ${this._copied
-                ? html`<polyline points="20 6 9 17 4 12"></polyline>`
-                : html`<rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                       <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>`
-              }
-            </svg>
+            ${this._copied
+              ? html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>`
+              : html`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`
+            }
             ${this._copied ? 'Copied!' : 'Copy'}
           </button>
         </div>
