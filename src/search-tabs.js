@@ -27,16 +27,17 @@ export class SearchTabs extends LitElement {
 
     .tabs-row {
       display: flex;
-      align-items: center;
+      flex-direction: column;
       border-bottom: 1px solid var(--color-border, #2a2a4e);
       margin-bottom: 0.75rem;
     }
 
     .tabs-label {
       color: var(--color-text-muted, #888);
-      font-size: 0.75rem;
-      padding: 0.5rem 0.75rem 0.5rem 0;
-      white-space: nowrap;
+      font-size: 0.6875rem;
+      padding: 0.25rem 0;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
 
     .tabs {
