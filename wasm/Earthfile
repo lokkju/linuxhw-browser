@@ -33,7 +33,7 @@ build:
     SAVE ARTIFACT /build/install-wasm/bin/edid-decode.html AS LOCAL edid-decode.html
     SAVE ARTIFACT /build/install-wasm/bin/edid-decode.ico AS LOCAL edid-decode.ico
 
-# Optimized build with smaller output
+# Optimized build with smaller output (no filesystem, buffer-based API)
 build-optimized:
     WORKDIR /build
 
@@ -44,9 +44,13 @@ build-optimized:
     GIT CLONE --branch master https://github.com/oe-mirrors/edid-decode.git edid-decode
     WORKDIR /build/edid-decode
 
-    # Copy optimized cross-file and post.js
+    # Copy optimized cross-file, post.js, and patch
     COPY wasm-crossfile-opt.txt /tmp/wasm-crossfile-opt.txt
     COPY post.js /tmp/post.js
+    COPY edid-decode-buffer.patch /tmp/edid-decode-buffer.patch
+
+    # Apply patch to add buffer-based entry point
+    RUN patch -p1 < /tmp/edid-decode-buffer.patch
 
     # Configure with optimized settings
     RUN meson setup build-wasm \

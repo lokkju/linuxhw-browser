@@ -124,26 +124,23 @@ export async function decodeEdidWasm(edidData) {
   // Reset output capture
   wrapper.resetCapture();
 
+  // Allocate memory in WASM heap for EDID data
+  const ptr = Module._malloc(edidData.length);
+  if (!ptr) {
+    throw new Error('Failed to allocate WASM memory');
+  }
+
   try {
-    // Write EDID to virtual filesystem
-    // FS is a global created by Emscripten
-    const FS = Module.FS || window.FS;
-    if (!FS) {
-      throw new Error('Emscripten FS not available');
-    }
+    // Copy EDID data to WASM heap
+    Module.HEAPU8.set(edidData, ptr);
 
-    const inputPath = '/input.bin';
-    FS.writeFile(inputPath, edidData);
-
-    // Call parse_edid (ccall uses name without underscore prefix)
-    Module.ccall('parse_edid', 'number', ['string'], [inputPath]);
-
-    // Clean up
-    try {
-      FS.unlink(inputPath);
-    } catch (e) {
-      // Ignore cleanup errors
-    }
+    // Call parse_edid_buffer with pointer and length
+    const result = Module.ccall(
+      'parse_edid_buffer',
+      'number',
+      ['number', 'number'],
+      [ptr, edidData.length]
+    );
 
     // Get output
     let output = wrapper.getOutput();
@@ -154,6 +151,10 @@ export async function decodeEdidWasm(edidData) {
       output += '\n--- Warnings/Errors ---\n' + errors;
     }
 
+    if (result !== 0 && !output.trim()) {
+      throw new Error('EDID decode failed');
+    }
+
     return output.trim() || '(no output)';
   } catch (err) {
     const errors = wrapper.getErrors();
@@ -161,6 +162,9 @@ export async function decodeEdidWasm(edidData) {
       throw new Error(`${err.message}\n${errors}`);
     }
     throw err;
+  } finally {
+    // Always free allocated memory
+    Module._free(ptr);
   }
 }
 
