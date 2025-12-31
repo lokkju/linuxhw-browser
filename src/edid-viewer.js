@@ -170,13 +170,6 @@ export class EdidViewer extends LitElement {
       border-radius: 1px;
       overflow: hidden;
       margin-top: 3px;
-      opacity: 0;
-      transition: opacity 0.2s;
-    }
-
-    .tab-progress-bar.loading,
-    .tab-progress-bar.loaded {
-      opacity: 1;
     }
 
     .tab-progress-fill {
@@ -622,10 +615,6 @@ export class EdidViewer extends LitElement {
   }
 
   render() {
-    if (!this.edidData) {
-      return html`<div class="empty">No EDID data to display</div>`;
-    }
-
     return html`
       <div class="header">
         <button class="back-btn" @click=${this._onBack}>&#9664; Back</button>
@@ -655,8 +644,9 @@ export class EdidViewer extends LitElement {
         </div>
       </div>
       <div class="content">
-        ${this._activeTab === 'decoded' ? this._renderDecoded()
-          : this._renderEdidDecode()}
+        ${!this.edidData
+          ? html`<div class="empty">Select an EDID to view details</div>`
+          : (this._activeTab === 'decoded' ? this._renderDecoded() : this._renderEdidDecode())}
       </div>
     `;
   }

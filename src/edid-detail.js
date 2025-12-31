@@ -29,19 +29,6 @@ export class EdidDetail extends LitElement {
       flex: 1;
       min-height: 0;
     }
-
-    .empty {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex: 1;
-      color: var(--color-text-muted, #888);
-      font-size: 0.875rem;
-      background: var(--color-surface, #16213e);
-      border: 1px solid var(--color-border, #2a2a4e);
-      border-radius: var(--radius, 4px);
-      margin-bottom: 0.75rem;
-    }
   `;
 
   constructor() {
@@ -74,17 +61,13 @@ export class EdidDetail extends LitElement {
   }
 
   render() {
-    if (!this.edid) {
-      return html`<div class="empty">Select an EDID to view details</div>`;
-    }
-
     // Get the linuxhw ID from the bucket data
     const linuxhwId = this._getLinuxhwId();
     const githubUrl = this._getGitHubUrl(linuxhwId);
 
     return html`
       <edid-viewer
-        .edidData=${this.edid.rawEdid}
+        .edidData=${this.edid?.rawEdid}
         .hash=${linuxhwId}
         .githubUrl=${githubUrl}
         ?show-back=${this.mobile}
