@@ -126,8 +126,8 @@ export async function decodeEdidWasm(edidData) {
 
   try {
     // Get pointer to static input buffer in WASM memory
-    const bufferPtr = Module._get_edid_buffer();
-    const bufferSize = Module._get_edid_buffer_size();
+    const bufferPtr = Module.ccall('get_edid_buffer', 'number', [], []);
+    const bufferSize = Module.ccall('get_edid_buffer_size', 'number', [], []);
 
     if (edidData.length > bufferSize) {
       throw new Error(`EDID data too large: ${edidData.length} > ${bufferSize}`);
@@ -137,7 +137,7 @@ export async function decodeEdidWasm(edidData) {
     Module.HEAPU8.set(edidData, bufferPtr);
 
     // Call parse_edid_buffer with just the length
-    const result = Module._parse_edid_buffer(edidData.length);
+    const result = Module.ccall('parse_edid_buffer', 'number', ['number'], [edidData.length]);
 
     // Get output
     let output = wrapper.getOutput();
