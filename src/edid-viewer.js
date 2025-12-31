@@ -40,25 +40,24 @@ export class EdidViewer extends LitElement {
     }
 
     .header {
+      display: none;
       padding: 0.5rem 0;
-      display: flex;
       align-items: center;
       gap: 0.75rem;
       flex-shrink: 0;
     }
 
+    :host([show-back]) .header {
+      display: flex;
+    }
+
     .back-btn {
-      display: none;
       padding: 0.375rem 0.5rem;
       border: none;
       background: transparent;
       color: var(--color-text, #eee);
       cursor: pointer;
       font-size: 1rem;
-    }
-
-    :host([show-back]) .back-btn {
-      display: block;
     }
 
     .header-title {
