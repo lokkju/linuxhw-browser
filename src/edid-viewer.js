@@ -120,6 +120,7 @@ export class EdidViewer extends LitElement {
     }
 
     .hex-container.compact {
+      height: auto;
       margin-bottom: 0.75rem;
     }
 
