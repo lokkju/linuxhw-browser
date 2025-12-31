@@ -212,10 +212,6 @@ export class EdidBrowser extends LitElement {
       user-select: none;
     }
 
-    .status-bar:hover {
-      background: var(--color-primary, #0f3460);
-    }
-
     .status-log-overlay {
       position: absolute;
       bottom: 24px;
@@ -506,7 +502,7 @@ export class EdidBrowser extends LitElement {
       <div class="status-log ${this._showStatusLog ? 'open' : ''}">
         <div class="status-log-header">
           <span>Status Log (${this._statusHistory.length} messages)</span>
-          <button class="status-log-close" @click=${this._toggleStatusLog}>✕</button>
+          <button class="status-log-close" @click=${this._toggleStatusLog}>▼</button>
         </div>
         <div class="status-log-content">
           <ul class="status-log-list">
