@@ -214,9 +214,23 @@ export class EdidBrowser extends LitElement {
       user-select: none;
     }
 
+    .status-expand {
+      background: none;
+      border: none;
+      color: var(--color-text-muted, #888);
+      cursor: pointer;
+      font-size: 0.625rem;
+      padding: 0;
+      line-height: 1;
+    }
+
+    .status-expand:hover {
+      color: var(--color-text, #eee);
+    }
+
     .status-log-overlay {
       position: absolute;
-      bottom: 24px;
+      bottom: 0;
       left: 0;
       right: 0;
       top: 48px;
@@ -233,15 +247,15 @@ export class EdidBrowser extends LitElement {
 
     .status-log {
       position: absolute;
-      bottom: 24px;
+      bottom: 0;
       left: 0;
       right: 0;
-      height: 50%;
+      height: calc(50% + 24px);
       background: rgba(22, 33, 62, 0.95);
       border-top: 2px solid var(--color-accent, #e94560);
       display: flex;
       flex-direction: column;
-      transform: translateY(calc(100% + 24px));
+      transform: translateY(100%);
       transition: transform 0.25s ease-out;
     }
 
@@ -257,8 +271,8 @@ export class EdidBrowser extends LitElement {
       letter-spacing: 0.05em;
       border-bottom: 1px solid var(--color-border, #2a2a4e);
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      gap: 0.5rem;
       flex-shrink: 0;
     }
 
@@ -504,8 +518,8 @@ export class EdidBrowser extends LitElement {
       ></div>
       <div class="status-log ${this._showStatusLog ? 'open' : ''}">
         <div class="status-log-header">
-          <span>Status Log (${this._statusHistory.length} messages)</span>
           <button class="status-log-close" @click=${this._toggleStatusLog}>▼</button>
+          <span>Status Log (${this._statusHistory.length} messages)</span>
         </div>
         <div class="status-log-content">
           <ul class="status-log-list">
@@ -520,6 +534,7 @@ export class EdidBrowser extends LitElement {
         </div>
       </div>
       <div class="status-bar" @click=${this._toggleStatusLog}>
+        <button class="status-expand">▲</button>
         <span class="status-indicator" data-type=${this._status.type}></span>
         <span class="status-message">${this._status.message}</span>
         <span class="status-source">${this._renderVersionInfo()}</span>
