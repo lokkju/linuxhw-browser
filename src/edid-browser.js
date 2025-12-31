@@ -136,6 +136,9 @@ export class EdidBrowser extends LitElement {
       background: var(--color-surface, #16213e);
       width: 500px;
       flex-shrink: 0;
+      padding: 0.75rem 1rem;
+      display: flex;
+      flex-direction: column;
     }
 
     .status-bar {

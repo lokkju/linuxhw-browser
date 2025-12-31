@@ -21,7 +21,12 @@ export class EdidDetail extends LitElement {
     :host {
       display: flex;
       flex-direction: column;
-      height: 100%;
+      flex: 1;
+      min-height: 0;
+      border: 1px solid var(--color-border, #2a2a4e);
+      border-radius: var(--radius, 4px);
+      overflow: hidden;
+      margin-bottom: 0.75rem;
     }
 
     edid-viewer {

@@ -475,7 +475,9 @@ export class EdidViewer extends LitElement {
       border-radius: 2px;
       margin-left: 0.25rem;
       text-transform: uppercase;
-      vertical-align: super;
+      vertical-align: middle;
+      position: relative;
+      top: -1px;
       transition: background 0.2s;
     }
 
