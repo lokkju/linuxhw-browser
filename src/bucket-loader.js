@@ -108,9 +108,14 @@ export class BucketLoader {
       throw new Error(`Failed to load bucket ${hex}: ${response.status}`);
     }
 
+    // Get transfer size (compressed) from Content-Length header
+    const contentLength = response.headers.get('content-length');
+    const transferSize = contentLength ? parseInt(contentLength, 10) : 0;
+
     const buffer = await response.arrayBuffer();
     const loadTime = performance.now() - startTime;
-    stats.recordBucketLoad(prefix, buffer.byteLength, loadTime);
+    // Use transfer size if available, otherwise fall back to decompressed
+    stats.recordBucketLoad(prefix, transferSize || buffer.byteLength, loadTime);
 
     return new ParsedBucket(prefix, new Uint8Array(buffer));
   }

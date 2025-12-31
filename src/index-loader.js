@@ -81,7 +81,7 @@ export class IndexLoader {
     }
 
     const contentLength = response.headers.get('content-length');
-    const total = contentLength ? parseInt(contentLength, 10) : 0;
+    const transferSize = contentLength ? parseInt(contentLength, 10) : 0;
 
     // Stream the response for progress tracking
     const reader = response.body.getReader();
@@ -93,7 +93,7 @@ export class IndexLoader {
       if (done) break;
       chunks.push(value);
       loaded += value.length;
-      this._notifyProgress(name, loaded, total);
+      this._notifyProgress(name, loaded, transferSize);
     }
 
     // Combine chunks
@@ -105,7 +105,8 @@ export class IndexLoader {
     }
 
     const loadTime = performance.now() - startTime;
-    stats.recordIndexLoad(name, loaded, loadTime);
+    // Use transfer size (compressed) if available, otherwise fall back to decompressed
+    stats.recordIndexLoad(name, transferSize || loaded, loadTime);
 
     return new ParsedIndex(name, buffer);
   }
