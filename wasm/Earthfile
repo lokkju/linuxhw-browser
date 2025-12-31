@@ -44,8 +44,9 @@ build-optimized:
     GIT CLONE --branch master https://github.com/oe-mirrors/edid-decode.git edid-decode
     WORKDIR /build/edid-decode
 
-    # Copy optimized cross-file
+    # Copy optimized cross-file and post.js
     COPY wasm-crossfile-opt.txt /tmp/wasm-crossfile-opt.txt
+    COPY post.js /tmp/post.js
 
     # Configure with optimized settings
     RUN meson setup build-wasm \
