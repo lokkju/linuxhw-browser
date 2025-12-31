@@ -306,7 +306,7 @@ export class EdidBrowser extends LitElement {
     .status-log-item {
       padding: 0.25rem 1rem;
       font-size: 0.75rem;
-      font-family: ui-monospace, monospace;
+      font-family: var(--font-mono);
       display: flex;
       gap: 0.75rem;
     }

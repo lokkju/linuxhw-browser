@@ -3,6 +3,10 @@
 }
 
 :root {
+  /* Typography */
+  --font-base: system-ui, -apple-system, sans-serif;
+  --font-mono: ui-monospace, monospace;
+
   /* Base colors */
   --color-bg: #1a1a2e;
   --color-surface: #16213e;
@@ -32,7 +36,7 @@ html, body {
 }
 
 body {
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: var(--font-base);
   background: var(--color-bg);
   color: var(--color-text);
 }

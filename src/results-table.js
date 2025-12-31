@@ -125,7 +125,7 @@ export class ResultsTable extends LitElement {
 
     .result-key {
       flex: 1;
-      font-family: ui-monospace, monospace;
+      font-family: var(--font-mono);
     }
 
     .result-count {
@@ -190,7 +190,7 @@ export class ResultsTable extends LitElement {
     }
 
     .edid-hash {
-      font-family: ui-monospace, monospace;
+      font-family: var(--font-mono);
       font-size: 0.8125rem;
       color: var(--color-text);
       font-weight: 500;

@@ -62,6 +62,10 @@ Decodes serialized Roaring bitmaps for search indexes.
 Components require these CSS custom properties defined in `:root` (see `style.css`):
 
 ```css
+/* Typography */
+--font-base: system-ui, -apple-system, sans-serif;
+--font-mono: ui-monospace, monospace;
+
 /* Base colors */
 --color-bg: #1a1a2e;
 --color-surface: #16213e;

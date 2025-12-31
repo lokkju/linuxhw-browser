@@ -37,7 +37,7 @@ export class EdidViewer extends LitElement {
       height: 100%;
       background: var(--edid-viewer-bg, var(--color-surface));
       color: var(--edid-viewer-text, var(--color-text));
-      font-family: var(--edid-viewer-font, system-ui, sans-serif);
+      font-family: var(--font-base);
     }
 
     .header {
@@ -63,7 +63,7 @@ export class EdidViewer extends LitElement {
 
     .header-title {
       font-size: 0.875rem;
-      font-family: ui-monospace, monospace;
+      font-family: var(--font-mono);
       color: var(--color-text);
     }
 
@@ -286,7 +286,7 @@ export class EdidViewer extends LitElement {
 
     .value {
       color: var(--color-text);
-      font-family: ui-monospace, monospace;
+      font-family: var(--font-mono);
     }
 
     .value.highlight {
@@ -429,7 +429,7 @@ export class EdidViewer extends LitElement {
       border: 1px solid var(--color-border);
       background: var(--color-bg);
       color: var(--color-text);
-      font-family: ui-monospace, monospace;
+      font-family: var(--font-mono);
       font-size: 0.75rem;
       line-height: 1.5;
       resize: none;
@@ -458,7 +458,7 @@ export class EdidViewer extends LitElement {
       border: 1px solid var(--color-border);
       border-radius: var(--radius);
       color: var(--color-text);
-      font-family: ui-monospace, monospace;
+      font-family: var(--font-mono);
       font-size: 0.75rem;
       line-height: 1.5;
       white-space: pre;
