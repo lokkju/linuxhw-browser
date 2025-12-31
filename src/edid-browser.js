@@ -32,6 +32,8 @@ export class EdidBrowser extends LitElement {
       margin: 0 auto;
       background: var(--color-bg, #1a1a2e);
       box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+      position: relative;
     }
 
     .header {
@@ -276,12 +278,15 @@ export class EdidBrowser extends LitElement {
     .status-log-content {
       flex: 1;
       overflow-y: auto;
+      display: flex;
+      flex-direction: column;
     }
 
     .status-log-list {
       list-style: none;
       margin: 0;
       padding: 0;
+      margin-top: auto;
     }
 
     .status-log-item {
