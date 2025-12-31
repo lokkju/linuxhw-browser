@@ -124,7 +124,7 @@ export class EdidViewer extends LitElement {
     }
 
     .hex-container.compact .hex-textarea {
-      height: 120px;
+      height: 8lh;
       font-size: 0.6875rem;
     }
 
