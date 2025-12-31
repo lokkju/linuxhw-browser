@@ -34,19 +34,22 @@ export async function loadWasm() {
       resolveReady = resolve;
     });
 
-    // Output capture
-    let capturedOutput = '';
-    let capturedErrors = '';
+    // Shared output capture object - Emscripten captures print at load time,
+    // so we need to use a mutable object that the closure can write to
+    const capture = {
+      output: '',
+      errors: '',
+    };
 
     // Set up Module configuration before loading the script
     // The Emscripten script looks for window.Module
     const moduleConfig = {
       noInitialRun: true,
       print: (text) => {
-        capturedOutput += text + '\n';
+        capture.output += text + '\n';
       },
       printErr: (text) => {
-        capturedErrors += text + '\n';
+        capture.errors += text + '\n';
       },
       locateFile: (path) => {
         return `${WASM_BASE_URL}${path}`;
@@ -79,29 +82,23 @@ export async function loadWasm() {
     // Get the module reference (Emscripten assigns to window.Module)
     const Module = window.Module;
 
-    // Create wrapper object with output capture functionality
+    // Create wrapper object - uses shared capture object since
+    // Emscripten's out/err functions were bound at load time
     wasmModule = {
       Module,
-      _capturedOutput: '',
-      _capturedErrors: '',
+      _capture: capture,
 
       resetCapture() {
-        this._capturedOutput = '';
-        this._capturedErrors = '';
-        Module.print = (text) => {
-          this._capturedOutput += text + '\n';
-        };
-        Module.printErr = (text) => {
-          this._capturedErrors += text + '\n';
-        };
+        this._capture.output = '';
+        this._capture.errors = '';
       },
 
       getOutput() {
-        return this._capturedOutput;
+        return this._capture.output;
       },
 
       getErrors() {
-        return this._capturedErrors;
+        return this._capture.errors;
       },
     };
 
