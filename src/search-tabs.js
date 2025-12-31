@@ -28,12 +28,12 @@ export class SearchTabs extends LitElement {
     .tabs-row {
       display: flex;
       flex-direction: column;
-      border-bottom: 1px solid var(--color-border, #2a2a4e);
+      border-bottom: 1px solid var(--color-border);
       margin-bottom: 0.75rem;
     }
 
     .tabs-label {
-      color: var(--color-text-muted, #888);
+      color: var(--color-text-muted);
       font-size: 0.6875rem;
       padding: 0.25rem 0;
       text-transform: uppercase;
@@ -48,7 +48,7 @@ export class SearchTabs extends LitElement {
       padding: 0.5rem 0.625rem;
       border: none;
       background: transparent;
-      color: var(--color-text-muted, #888);
+      color: var(--color-text-muted);
       font-size: 0.75rem;
       cursor: pointer;
       position: relative;
@@ -57,14 +57,14 @@ export class SearchTabs extends LitElement {
     }
 
     .tab:hover {
-      color: var(--color-text, #eee);
+      color: var(--color-text);
     }
 
     .tab[data-active="true"] {
-      color: var(--color-text, #eee);
-      background: rgba(255, 255, 255, 0.08);
+      color: var(--color-text);
+      background: var(--color-overlay-light);
       border-radius: 4px;
-      text-shadow: 0 0 8px var(--color-accent, #e94560);
+      text-shadow: 0 0 8px var(--color-accent);
     }
 
     .tab-content {
@@ -83,7 +83,7 @@ export class SearchTabs extends LitElement {
       display: block;
       width: 100%;
       height: 2px;
-      background: rgba(255, 255, 255, 0.1);
+      background: var(--color-overlay-medium);
       border-radius: 1px;
       overflow: hidden;
       margin-top: 3px;
@@ -99,13 +99,13 @@ export class SearchTabs extends LitElement {
     .tab-progress-fill {
       display: block;
       height: 100%;
-      background: var(--color-accent, #e94560);
+      background: var(--color-accent);
       transition: width 0.2s ease-out, background 0.2s;
       border-radius: 2px;
     }
 
     .tab-progress-bar.loaded .tab-progress-fill {
-      background: #4ade80;
+      background: var(--color-success);
     }
 
     .search-row {
@@ -116,29 +116,29 @@ export class SearchTabs extends LitElement {
     .search-input {
       flex: 1;
       padding: 0.5rem 0.75rem;
-      border: 1px solid var(--color-border, #2a2a4e);
-      background: var(--color-surface, #16213e);
-      color: var(--color-text, #eee);
-      border-radius: var(--radius, 4px);
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      color: var(--color-text);
+      border-radius: var(--radius);
       font-size: 0.875rem;
       outline: none;
       transition: border-color 0.15s;
     }
 
     .search-input:focus {
-      border-color: var(--color-accent, #e94560);
+      border-color: var(--color-accent);
     }
 
     .search-input::placeholder {
-      color: var(--color-text-muted, #888);
+      color: var(--color-text-muted);
     }
 
     .search-btn {
       padding: 0.5rem 1rem;
       border: none;
-      background: var(--color-accent, #e94560);
+      background: var(--color-accent);
       color: white;
-      border-radius: var(--radius, 4px);
+      border-radius: var(--radius);
       font-size: 0.875rem;
       cursor: pointer;
       transition: opacity 0.15s;

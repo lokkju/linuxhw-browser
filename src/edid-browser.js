@@ -30,7 +30,7 @@ export class EdidBrowser extends LitElement {
       min-height: 0;
       max-width: 100%;
       margin: 0 auto;
-      background: var(--color-bg, #1a1a2e);
+      background: var(--color-bg);
       box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
       overflow: hidden;
       position: relative;
@@ -42,9 +42,9 @@ export class EdidBrowser extends LitElement {
       display: flex;
       align-items: center;
       gap: 1rem;
-      border-bottom: 1px solid var(--color-border, #2a2a4e);
+      border-bottom: 1px solid var(--color-border);
       flex-shrink: 0;
-      background: var(--color-surface, #16213e);
+      background: var(--color-surface);
     }
 
     .header h1 {
@@ -54,12 +54,12 @@ export class EdidBrowser extends LitElement {
     }
 
     .header .count {
-      color: var(--color-text-muted, #888);
+      color: var(--color-text-muted);
       font-size: 0.8125rem;
     }
 
     .header .project-link {
-      color: var(--color-accent, #e94560);
+      color: var(--color-accent);
       text-decoration: none;
       font-size: 0.8125rem;
       margin-left: auto;
@@ -86,7 +86,7 @@ export class EdidBrowser extends LitElement {
     :host([layout="wide"]) .selector-section {
       width: 500px;
       flex-shrink: 0;
-      border-right: 1px solid var(--color-border, #2a2a4e);
+      border-right: 1px solid var(--color-border);
     }
 
     :host([layout="wide"]) .detail-section {
@@ -130,14 +130,14 @@ export class EdidBrowser extends LitElement {
 
     .selector-section {
       overflow: hidden;
-      background: var(--color-bg, #1a1a2e);
+      background: var(--color-bg);
       width: 500px;
       flex-shrink: 0;
     }
 
     .detail-section {
       overflow: hidden;
-      background: var(--color-surface, #16213e);
+      background: var(--color-surface);
       width: 500px;
       flex-shrink: 0;
       padding: 0.75rem 1rem;
@@ -148,13 +148,13 @@ export class EdidBrowser extends LitElement {
     .status-bar {
       height: 24px;
       padding: 0 1rem;
-      background: var(--color-surface, #16213e);
-      border-top: 1px solid var(--color-border, #2a2a4e);
+      background: var(--color-surface);
+      border-top: 1px solid var(--color-border);
       display: flex;
       align-items: center;
       gap: 0.5rem;
       font-size: 0.6875rem;
-      color: var(--color-text-muted, #888);
+      color: var(--color-text-muted);
       flex-shrink: 0;
     }
 
@@ -162,24 +162,24 @@ export class EdidBrowser extends LitElement {
       width: 6px;
       height: 6px;
       border-radius: 50%;
-      background: var(--color-text-muted, #888);
+      background: var(--color-text-muted);
     }
 
     .status-indicator[data-type="loading"] {
-      background: var(--color-accent, #e94560);
+      background: var(--color-accent);
       animation: pulse 1s ease-in-out infinite;
     }
 
     .status-indicator[data-type="success"] {
-      background: #4ade80;
+      background: var(--color-success);
     }
 
     .status-indicator[data-type="warning"] {
-      background: #fbbf24;
+      background: var(--color-warning);
     }
 
     .status-indicator[data-type="error"] {
-      background: var(--color-accent, #e94560);
+      background: var(--color-accent);
     }
 
     @keyframes pulse {
@@ -195,17 +195,17 @@ export class EdidBrowser extends LitElement {
     }
 
     .status-source {
-      color: var(--color-text-muted, #666);
+      color: var(--color-text-muted);
       font-size: 0.625rem;
     }
 
     .status-source a {
-      color: var(--color-text-muted, #888);
+      color: var(--color-text-muted);
       text-decoration: none;
     }
 
     .status-source a:hover {
-      color: var(--color-accent, #e94560);
+      color: var(--color-accent);
       text-decoration: underline;
     }
 
@@ -217,7 +217,7 @@ export class EdidBrowser extends LitElement {
     .status-expand {
       background: none;
       border: none;
-      color: var(--color-text-muted, #888);
+      color: var(--color-text-muted);
       cursor: pointer;
       font-size: 0.625rem;
       padding: 0;
@@ -225,7 +225,7 @@ export class EdidBrowser extends LitElement {
     }
 
     .status-expand:hover {
-      color: var(--color-text, #eee);
+      color: var(--color-text);
     }
 
     .status-log-overlay {
@@ -234,7 +234,7 @@ export class EdidBrowser extends LitElement {
       left: 0;
       right: 0;
       top: 48px;
-      background: rgba(0, 0, 0, 0.5);
+      background: var(--color-overlay-heavy);
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.2s;
@@ -252,7 +252,7 @@ export class EdidBrowser extends LitElement {
       right: 0;
       height: calc(50% + 24px);
       background: rgba(22, 33, 62, 0.95);
-      border-top: 2px solid var(--color-accent, #e94560);
+      border-top: 2px solid var(--color-accent);
       display: flex;
       flex-direction: column;
       transform: translateY(100%);
@@ -266,10 +266,10 @@ export class EdidBrowser extends LitElement {
     .status-log-header {
       padding: 0.5rem 1rem;
       font-size: 0.6875rem;
-      color: var(--color-text-muted, #888);
+      color: var(--color-text-muted);
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      border-bottom: 1px solid var(--color-border, #2a2a4e);
+      border-bottom: 1px solid var(--color-border);
       display: flex;
       align-items: center;
       gap: 0.5rem;
@@ -279,14 +279,14 @@ export class EdidBrowser extends LitElement {
     .status-log-close {
       background: none;
       border: none;
-      color: var(--color-text-muted, #888);
+      color: var(--color-text-muted);
       cursor: pointer;
       font-size: 0.875rem;
       padding: 0.25rem 0.5rem;
     }
 
     .status-log-close:hover {
-      color: var(--color-text, #eee);
+      color: var(--color-text);
     }
 
     .status-log-content {
@@ -312,11 +312,11 @@ export class EdidBrowser extends LitElement {
     }
 
     .status-log-item:nth-child(odd) {
-      background: rgba(0, 0, 0, 0.2);
+      background: var(--color-overlay-dark);
     }
 
     .status-log-time {
-      color: var(--color-text-muted, #888);
+      color: var(--color-text-muted);
       flex-shrink: 0;
     }
 
@@ -327,27 +327,27 @@ export class EdidBrowser extends LitElement {
     }
 
     .status-log-msg {
-      color: var(--color-text, #eee);
+      color: var(--color-text);
       flex: 1;
     }
 
     .status-log-item[data-type="error"] .status-log-type,
     .status-log-item[data-type="error"] .status-log-msg {
-      color: var(--color-accent, #e94560);
+      color: var(--color-accent);
     }
 
     .status-log-item[data-type="success"] .status-log-type,
     .status-log-item[data-type="success"] .status-log-msg {
-      color: #4ade80;
+      color: var(--color-success);
     }
 
     .status-log-item[data-type="warning"] .status-log-type,
     .status-log-item[data-type="warning"] .status-log-msg {
-      color: #fbbf24;
+      color: var(--color-warning);
     }
 
     .status-log-item[data-type="loading"] .status-log-type {
-      color: var(--color-text-muted, #888);
+      color: var(--color-text-muted);
     }
   `;
 

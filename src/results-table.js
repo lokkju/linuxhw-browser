@@ -41,9 +41,9 @@ export class ResultsTable extends LitElement {
       display: block;
       flex: 1;
       min-height: 0;
-      border: 1px solid var(--color-border, #2a2a4e);
-      border-radius: var(--radius, 4px);
-      background: var(--color-surface, #16213e);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      background: var(--color-surface);
       overflow-y: auto;
       overflow-x: hidden;
       margin-bottom: 0.75rem;
@@ -54,15 +54,15 @@ export class ResultsTable extends LitElement {
       align-items: center;
       justify-content: center;
       padding: 2rem;
-      color: var(--color-text-muted, #888);
+      color: var(--color-text-muted);
       font-size: 0.875rem;
     }
 
     .spinner {
       width: 16px;
       height: 16px;
-      border: 2px solid var(--color-primary, #0f3460);
-      border-top-color: var(--color-accent, #e94560);
+      border: 2px solid var(--color-primary);
+      border-top-color: var(--color-accent);
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
       margin-right: 0.5rem;
@@ -79,7 +79,7 @@ export class ResultsTable extends LitElement {
     }
 
     .result-item {
-      border-bottom: 1px solid var(--color-border, #2a2a4e);
+      border-bottom: 1px solid var(--color-border);
     }
 
     .result-item:nth-child(odd) {
@@ -91,7 +91,7 @@ export class ResultsTable extends LitElement {
       padding: 0.625rem 1rem;
       border: none;
       background: transparent;
-      color: var(--color-text, #eee);
+      color: var(--color-text);
       text-align: left;
       cursor: pointer;
       font-size: 0.875rem;
@@ -102,20 +102,20 @@ export class ResultsTable extends LitElement {
     }
 
     .result-btn:hover {
-      background: var(--color-surface, #16213e);
+      background: var(--color-surface);
     }
 
     .result-item[data-selected="true"] > .result-btn {
-      background: var(--color-primary, #0f3460);
+      background: var(--color-primary);
     }
 
     .result-item[data-selected="true"] {
-      border-left: 2px solid var(--color-accent, #e94560);
+      border-left: 2px solid var(--color-accent);
     }
 
     .result-arrow {
       font-size: 0.625rem;
-      color: var(--color-text-muted, #888);
+      color: var(--color-text-muted);
       transition: transform 0.15s;
     }
 
@@ -130,13 +130,13 @@ export class ResultsTable extends LitElement {
 
     .result-count {
       font-size: 0.75rem;
-      color: var(--color-text-muted, #888);
+      color: var(--color-text-muted);
     }
 
     .expanded-content {
-      background: var(--color-surface, #16213e);
+      background: var(--color-surface);
       padding: 0.5rem 1rem 0.5rem 2rem;
-      border-top: 1px solid var(--color-border, #2a2a4e);
+      border-top: 1px solid var(--color-border);
     }
 
     .edid-list {
@@ -148,8 +148,8 @@ export class ResultsTable extends LitElement {
     .edid-item {
       padding: 0.5rem;
       margin-bottom: 0.125rem;
-      background: var(--color-bg, #1a1a2e);
-      border-radius: var(--radius, 4px);
+      background: var(--color-bg);
+      border-radius: var(--radius);
       font-size: 0.8125rem;
       display: flex;
       align-items: center;
@@ -159,31 +159,31 @@ export class ResultsTable extends LitElement {
     }
 
     .edid-item:nth-child(odd) {
-      background: rgba(0, 0, 0, 0.2);
+      background: var(--color-overlay-dark);
     }
 
     .edid-item:hover {
-      background: var(--color-primary, #0f3460);
+      background: var(--color-primary);
     }
 
     .edid-item[data-selected="true"] {
-      background: var(--color-primary, #0f3460);
-      border-left: 2px solid var(--color-accent, #e94560);
+      background: var(--color-primary);
+      border-left: 2px solid var(--color-accent);
     }
 
     .edid-item[data-error="true"] {
-      border-left: 2px solid var(--color-accent, #e94560);
+      border-left: 2px solid var(--color-accent);
       opacity: 0.7;
       cursor: default;
     }
 
     .edid-resolution {
       min-width: 80px;
-      color: var(--color-text-muted, #888);
+      color: var(--color-text-muted);
     }
 
     .edid-meta {
-      color: var(--color-text-muted, #888);
+      color: var(--color-text-muted);
       font-size: 0.75rem;
       display: flex;
       gap: 0.75rem;
@@ -192,13 +192,13 @@ export class ResultsTable extends LitElement {
     .edid-hash {
       font-family: ui-monospace, monospace;
       font-size: 0.8125rem;
-      color: var(--color-text, #eee);
+      color: var(--color-text);
       font-weight: 500;
       min-width: 6em;
     }
 
     .edid-error {
-      color: var(--color-accent, #e94560);
+      color: var(--color-accent);
       font-size: 0.75rem;
       font-style: italic;
       flex: 1;
@@ -206,55 +206,55 @@ export class ResultsTable extends LitElement {
 
     .retry-btn {
       padding: 0.25rem 0.5rem;
-      border: 1px solid var(--color-accent, #e94560);
+      border: 1px solid var(--color-accent);
       background: transparent;
-      color: var(--color-accent, #e94560);
-      border-radius: var(--radius, 4px);
+      color: var(--color-accent);
+      border-radius: var(--radius);
       font-size: 0.6875rem;
       cursor: pointer;
       transition: background 0.1s;
     }
 
     .retry-btn:hover {
-      background: rgba(233, 69, 96, 0.1);
+      background: color-mix(in srgb, var(--color-accent) 10%, transparent);
     }
 
     .edid-more {
       padding: 0.375rem 0.5rem;
-      color: var(--color-text-muted, #888);
+      color: var(--color-text-muted);
       font-size: 0.75rem;
     }
 
     .edid-more-btn {
       padding: 0.375rem 0.75rem;
-      border: 1px solid var(--color-border, #2a2a4e);
+      border: 1px solid var(--color-border);
       background: transparent;
-      color: var(--color-text-muted, #888);
-      border-radius: var(--radius, 4px);
+      color: var(--color-text-muted);
+      border-radius: var(--radius);
       font-size: 0.75rem;
       cursor: pointer;
       transition: background 0.1s;
     }
 
     .edid-more-btn:hover {
-      background: var(--color-bg, #1a1a2e);
-      color: var(--color-text, #eee);
+      background: var(--color-bg);
+      color: var(--color-text);
     }
 
     .error-banner {
       padding: 0.5rem;
       margin-bottom: 0.5rem;
-      background: rgba(233, 69, 96, 0.1);
-      border: 1px solid var(--color-accent, #e94560);
-      border-radius: var(--radius, 4px);
-      color: var(--color-accent, #e94560);
+      background: color-mix(in srgb, var(--color-accent) 10%, transparent);
+      border: 1px solid var(--color-accent);
+      border-radius: var(--radius);
+      color: var(--color-accent);
       font-size: 0.75rem;
     }
 
     .load-more {
       padding: 1rem;
       text-align: center;
-      color: var(--color-text-muted, #888);
+      color: var(--color-text-muted);
       font-size: 0.75rem;
     }
 
@@ -265,8 +265,8 @@ export class ResultsTable extends LitElement {
     .results-count {
       padding: 0.5rem 1rem;
       font-size: 0.75rem;
-      color: var(--color-text-muted, #888);
-      border-bottom: 1px solid var(--color-border, #2a2a4e);
+      color: var(--color-text-muted);
+      border-bottom: 1px solid var(--color-border);
     }
   `;
 

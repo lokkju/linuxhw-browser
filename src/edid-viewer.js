@@ -35,8 +35,8 @@ export class EdidViewer extends LitElement {
       display: flex;
       flex-direction: column;
       height: 100%;
-      background: var(--edid-viewer-bg, var(--color-surface, #16213e));
-      color: var(--edid-viewer-text, var(--color-text, #eee));
+      background: var(--edid-viewer-bg, var(--color-surface));
+      color: var(--edid-viewer-text, var(--color-text));
       font-family: var(--edid-viewer-font, system-ui, sans-serif);
     }
 
@@ -56,7 +56,7 @@ export class EdidViewer extends LitElement {
       padding: 0.375rem 0.5rem;
       border: none;
       background: transparent;
-      color: var(--color-text, #eee);
+      color: var(--color-text);
       cursor: pointer;
       font-size: 1rem;
     }
@@ -64,7 +64,7 @@ export class EdidViewer extends LitElement {
     .header-title {
       font-size: 0.875rem;
       font-family: ui-monospace, monospace;
-      color: var(--color-text, #eee);
+      color: var(--color-text);
     }
 
     .header-spacer {
@@ -76,17 +76,17 @@ export class EdidViewer extends LitElement {
       align-items: center;
       gap: 0.375rem;
       padding: 0.25rem 0.5rem;
-      color: var(--color-text-muted, #888);
+      color: var(--color-text-muted);
       text-decoration: none;
       font-size: 0.75rem;
-      border: 1px solid var(--color-border, #2a2a4e);
-      border-radius: var(--radius, 4px);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
       transition: all 0.15s;
     }
 
     .github-link:hover {
-      color: var(--color-text, #eee);
-      border-color: var(--color-text-muted, #888);
+      color: var(--color-text);
+      border-color: var(--color-text-muted);
     }
 
     .github-icon {
@@ -117,7 +117,7 @@ export class EdidViewer extends LitElement {
     }
 
     .tabs-label {
-      color: var(--color-text-muted, #888);
+      color: var(--color-text-muted);
       font-size: 0.6875rem;
       padding: 0.25rem 0;
       text-transform: uppercase;
@@ -126,14 +126,14 @@ export class EdidViewer extends LitElement {
 
     .tabs {
       display: flex;
-      border-bottom: 1px solid var(--color-border, #2a2a4e);
+      border-bottom: 1px solid var(--color-border);
     }
 
     .tab {
       padding: 0.5rem 0.75rem;
       border: none;
       background: transparent;
-      color: var(--color-text-muted, #888);
+      color: var(--color-text-muted);
       font-size: 0.75rem;
       cursor: pointer;
       white-space: nowrap;
@@ -142,13 +142,13 @@ export class EdidViewer extends LitElement {
     }
 
     .tab:hover {
-      color: var(--color-text, #eee);
+      color: var(--color-text);
     }
 
     .tab[data-active="true"] {
-      color: var(--color-text, #eee);
-      background: rgba(255, 255, 255, 0.08);
-      text-shadow: 0 0 8px var(--color-accent, #e94560);
+      color: var(--color-text);
+      background: var(--color-overlay-light);
+      text-shadow: 0 0 8px var(--color-accent);
     }
 
     .tab-content {
@@ -166,7 +166,7 @@ export class EdidViewer extends LitElement {
       display: block;
       width: 100%;
       height: 2px;
-      background: rgba(255, 255, 255, 0.1);
+      background: var(--color-overlay-medium);
       border-radius: 1px;
       overflow: hidden;
       margin-top: 3px;
@@ -175,13 +175,13 @@ export class EdidViewer extends LitElement {
     .tab-progress-fill {
       display: block;
       height: 100%;
-      background: var(--color-accent, #e94560);
+      background: var(--color-accent);
       transition: width 0.2s ease-out, background 0.2s;
       border-radius: 1px;
     }
 
     .tab-progress-bar.loaded .tab-progress-fill {
-      background: #4ade80;
+      background: var(--color-success);
     }
 
     .content {
@@ -189,11 +189,11 @@ export class EdidViewer extends LitElement {
       min-height: 0;
       overflow-y: auto;
       padding: 1rem;
-      border: 1px solid var(--color-border, #2a2a4e);
-      border-radius: var(--radius, 4px);
-      background: var(--color-bg, #1a1a2e);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      background: var(--color-bg);
       margin-bottom: 0.75rem;
-      background: var(--color-surface, #16213e);
+      background: var(--color-surface);
     }
 
     .empty {
@@ -201,17 +201,17 @@ export class EdidViewer extends LitElement {
       align-items: center;
       justify-content: center;
       height: 100%;
-      color: var(--color-text-muted, #888);
+      color: var(--color-text-muted);
       font-size: 0.875rem;
     }
 
     .warning {
       margin-bottom: 1rem;
       padding: 0.75rem;
-      background: rgba(251, 191, 36, 0.1);
-      border: 1px solid #fbbf24;
-      border-radius: var(--radius, 4px);
-      color: #fbbf24;
+      background: color-mix(in srgb, var(--color-warning) 10%, transparent);
+      border: 1px solid var(--color-warning);
+      border-radius: var(--radius);
+      color: var(--color-warning);
       font-size: 0.8125rem;
     }
 
@@ -235,12 +235,12 @@ export class EdidViewer extends LitElement {
 
     .section-title {
       font-size: 0.6875rem;
-      color: var(--color-text-muted, #888);
+      color: var(--color-text-muted);
       text-transform: uppercase;
       letter-spacing: 0.1em;
       margin-bottom: 0.5rem;
       padding-bottom: 0.25rem;
-      border-bottom: 1px solid var(--color-border, #2a2a4e);
+      border-bottom: 1px solid var(--color-border);
       display: flex;
       align-items: center;
       gap: 0.5rem;
@@ -248,7 +248,7 @@ export class EdidViewer extends LitElement {
     }
 
     .section-title:hover {
-      color: var(--color-text, #eee);
+      color: var(--color-text);
     }
 
     .section-toggle {
@@ -280,25 +280,25 @@ export class EdidViewer extends LitElement {
     }
 
     .label {
-      color: var(--color-text-muted, #888);
+      color: var(--color-text-muted);
       text-align: right;
     }
 
     .value {
-      color: var(--color-text, #eee);
+      color: var(--color-text);
       font-family: ui-monospace, monospace;
     }
 
     .value.highlight {
-      color: var(--color-accent, #e94560);
+      color: var(--color-accent);
     }
 
     .value.success {
-      color: #4ade80;
+      color: var(--color-success);
     }
 
     .value.warning {
-      color: #fbbf24;
+      color: var(--color-warning);
     }
 
     .list {
@@ -310,7 +310,7 @@ export class EdidViewer extends LitElement {
 
     .list li {
       padding: 0.25rem 0;
-      border-bottom: 1px solid var(--color-border, #2a2a4e);
+      border-bottom: 1px solid var(--color-border);
     }
 
     .list li:last-child {
@@ -320,7 +320,7 @@ export class EdidViewer extends LitElement {
     .badge {
       display: inline-block;
       padding: 0.125rem 0.375rem;
-      background: var(--color-accent, #e94560);
+      background: var(--color-accent);
       color: white;
       font-size: 0.625rem;
       border-radius: 2px;
@@ -329,9 +329,9 @@ export class EdidViewer extends LitElement {
     }
 
     .timing-card {
-      background: var(--color-bg, #1a1a2e);
-      border: 1px solid var(--color-border, #2a2a4e);
-      border-radius: var(--radius, 4px);
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
       padding: 0.75rem;
       margin-bottom: 0.5rem;
       font-size: 0.75rem;
@@ -344,7 +344,7 @@ export class EdidViewer extends LitElement {
     }
 
     .timing-card .timing-detail {
-      color: var(--color-text-muted, #888);
+      color: var(--color-text-muted);
     }
 
     .audio-format, .video-mode {
@@ -352,7 +352,7 @@ export class EdidViewer extends LitElement {
       justify-content: space-between;
       align-items: center;
       padding: 0.375rem 0;
-      border-bottom: 1px solid var(--color-border, #2a2a4e);
+      border-bottom: 1px solid var(--color-border);
       font-size: 0.8125rem;
     }
 
@@ -365,7 +365,7 @@ export class EdidViewer extends LitElement {
     }
 
     .audio-format .format-details, .video-mode .mode-details {
-      color: var(--color-text-muted, #888);
+      color: var(--color-text-muted);
       font-size: 0.75rem;
     }
 
@@ -385,7 +385,7 @@ export class EdidViewer extends LitElement {
 
     .hex-label {
       font-size: 0.75rem;
-      color: var(--color-text-muted, #888);
+      color: var(--color-text-muted);
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
@@ -395,24 +395,24 @@ export class EdidViewer extends LitElement {
       align-items: center;
       gap: 0.375rem;
       padding: 0.375rem 0.625rem;
-      border: 1px solid var(--color-border, #2a2a4e);
+      border: 1px solid var(--color-border);
       background: transparent;
-      color: var(--color-text-muted, #888);
+      color: var(--color-text-muted);
       font-size: 0.75rem;
-      border-radius: var(--radius, 4px);
+      border-radius: var(--radius);
       cursor: pointer;
       transition: all 0.15s;
       text-decoration: none;
     }
 
     .action-btn:hover {
-      color: var(--color-text, #eee);
-      border-color: var(--color-text-muted, #888);
+      color: var(--color-text);
+      border-color: var(--color-text-muted);
     }
 
     .action-btn[data-copied] {
-      color: #4ade80;
-      border-color: #4ade80;
+      color: var(--color-success);
+      border-color: var(--color-success);
     }
 
     .action-btn svg {
@@ -426,20 +426,20 @@ export class EdidViewer extends LitElement {
       width: 100%;
       min-height: 200px;
       padding: 0.75rem;
-      border: 1px solid var(--color-border, #2a2a4e);
-      background: var(--color-bg, #1a1a2e);
-      color: var(--color-text, #eee);
+      border: 1px solid var(--color-border);
+      background: var(--color-bg);
+      color: var(--color-text);
       font-family: ui-monospace, monospace;
       font-size: 0.75rem;
       line-height: 1.5;
       resize: none;
-      border-radius: var(--radius, 4px);
+      border-radius: var(--radius);
       box-sizing: border-box;
     }
 
     .hex-textarea:focus {
       outline: none;
-      border-color: var(--color-accent, #e94560);
+      border-color: var(--color-accent);
     }
 
     /* edid-decode WASM output styles */
@@ -454,10 +454,10 @@ export class EdidViewer extends LitElement {
       flex: 1;
       margin: 0;
       padding: 0.75rem;
-      background: var(--color-bg, #1a1a2e);
-      border: 1px solid var(--color-border, #2a2a4e);
-      border-radius: var(--radius, 4px);
-      color: var(--color-text, #eee);
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      color: var(--color-text);
       font-family: ui-monospace, monospace;
       font-size: 0.75rem;
       line-height: 1.5;
@@ -472,14 +472,14 @@ export class EdidViewer extends LitElement {
       justify-content: center;
       height: 100%;
       gap: 1rem;
-      color: var(--color-text-muted, #888);
+      color: var(--color-text-muted);
     }
 
     .loading-spinner {
       width: 32px;
       height: 32px;
-      border: 3px solid var(--color-border, #2a2a4e);
-      border-top-color: var(--color-accent, #e94560);
+      border: 3px solid var(--color-border);
+      border-top-color: var(--color-accent);
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
@@ -495,7 +495,7 @@ export class EdidViewer extends LitElement {
       justify-content: center;
       height: 100%;
       gap: 0.5rem;
-      color: var(--color-accent, #e94560);
+      color: var(--color-accent);
       text-align: center;
       padding: 1rem;
     }
@@ -506,7 +506,7 @@ export class EdidViewer extends LitElement {
 
     .error-message .error-detail {
       font-size: 0.75rem;
-      color: var(--color-text-muted, #888);
+      color: var(--color-text-muted);
     }
 
   `;
