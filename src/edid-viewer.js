@@ -494,6 +494,11 @@ export class EdidViewer extends LitElement {
       // Reset WASM state when EDID data changes
       this._wasmOutput = null;
       this._wasmError = null;
+      // Auto-reload if user is on edid-decode tab
+      if (this._activeTab === 'edid-decode' && this.edidData) {
+        // Schedule reload after render
+        this.updateComplete.then(() => this._onEdidDecodeTab());
+      }
     }
   }
 
