@@ -124,23 +124,20 @@ export async function decodeEdidWasm(edidData) {
   // Reset output capture
   wrapper.resetCapture();
 
-  // Allocate memory in WASM heap for EDID data
-  const ptr = Module._malloc(edidData.length);
-  if (!ptr) {
-    throw new Error('Failed to allocate WASM memory');
-  }
-
   try {
-    // Copy EDID data to WASM heap
-    Module.HEAPU8.set(edidData, ptr);
+    // Get pointer to static input buffer in WASM memory
+    const bufferPtr = Module._get_edid_buffer();
+    const bufferSize = Module._get_edid_buffer_size();
 
-    // Call parse_edid_buffer with pointer and length
-    const result = Module.ccall(
-      'parse_edid_buffer',
-      'number',
-      ['number', 'number'],
-      [ptr, edidData.length]
-    );
+    if (edidData.length > bufferSize) {
+      throw new Error(`EDID data too large: ${edidData.length} > ${bufferSize}`);
+    }
+
+    // Copy EDID data directly to the static buffer
+    Module.HEAPU8.set(edidData, bufferPtr);
+
+    // Call parse_edid_buffer with just the length
+    const result = Module._parse_edid_buffer(edidData.length);
 
     // Get output
     let output = wrapper.getOutput();
@@ -162,9 +159,6 @@ export async function decodeEdidWasm(edidData) {
       throw new Error(`${err.message}\n${errors}`);
     }
     throw err;
-  } finally {
-    // Always free allocated memory
-    Module._free(ptr);
   }
 }
 
