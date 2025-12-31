@@ -347,7 +347,7 @@ export class EdidViewer extends LitElement {
       letter-spacing: 0.05em;
     }
 
-    .copy-btn {
+    .action-btn {
       display: flex;
       align-items: center;
       gap: 0.375rem;
@@ -362,19 +362,20 @@ export class EdidViewer extends LitElement {
       text-decoration: none;
     }
 
-    .copy-btn:hover {
+    .action-btn:hover {
       color: var(--color-text, #eee);
       border-color: var(--color-text-muted, #888);
     }
 
-    .copy-btn[data-copied] {
+    .action-btn[data-copied] {
       color: #4ade80;
       border-color: #4ade80;
     }
 
-    .copy-icon {
+    .action-btn svg {
       width: 14px;
       height: 14px;
+      flex-shrink: 0;
     }
 
     .hex-textarea {
@@ -628,14 +629,14 @@ export class EdidViewer extends LitElement {
             <span class="hex-label">${this.edidData.length} bytes</span>
             <div class="hex-actions">
               ${this.githubUrl ? html`
-                <a class="copy-btn" href=${this.githubUrl} target="_blank" rel="noopener">
+                <a class="action-btn" href=${this.githubUrl} target="_blank" rel="noopener">
                   <svg class="copy-icon" viewBox="0 0 24 24" fill="currentColor" stroke="none">
                     <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
                   </svg>
                   Source
                 </a>
               ` : ''}
-              <button class="copy-btn" @click=${() => this._copyHex(false)} ?data-copied=${this._copied}>
+              <button class="action-btn" @click=${() => this._copyHex(false)} ?data-copied=${this._copied}>
                 <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   ${this._copied
                     ? html`<polyline points="20 6 9 17 4 12"></polyline>`
@@ -1091,7 +1092,7 @@ export class EdidViewer extends LitElement {
       <div class="hex-container">
         <div class="hex-header">
           <span class="hex-label">${this.edidData.length} bytes, 16 bytes/line</span>
-          <button class="copy-btn" @click=${() => this._copyHex(spaced)} ?data-copied=${this._copied}>
+          <button class="action-btn" @click=${() => this._copyHex(spaced)} ?data-copied=${this._copied}>
             <svg class="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               ${this._copied
                 ? html`<polyline points="20 6 9 17 4 12"></polyline>`
