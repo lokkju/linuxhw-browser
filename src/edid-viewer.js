@@ -192,6 +192,7 @@ export class EdidViewer extends LitElement {
       border-radius: var(--radius, 4px);
       background: var(--color-bg, #1a1a2e);
       margin-bottom: 0.75rem;
+      background: var(--color-surface, #16213e);
     }
 
     .empty {

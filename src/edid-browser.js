@@ -23,7 +23,7 @@ export class EdidBrowser extends LitElement {
     :host {
       display: flex;
       flex-direction: column;
-      width: 1000px;
+      width: 1048px;
       height: 100%;
       min-height: 0;
       max-width: 100%;
