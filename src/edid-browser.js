@@ -509,6 +509,7 @@ export class EdidBrowser extends LitElement {
             .edid=${this._selectedEdid}
             ?mobile=${this._layoutMode === 'mobile'}
             @back=${this._onDetailBack}
+            @status=${this._onStatus}
           ></edid-detail>
         </div>
       </div>

@@ -565,17 +565,33 @@ export class EdidViewer extends LitElement {
     this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
   }
 
+  _emitStatus(message, type = 'info') {
+    this.dispatchEvent(new CustomEvent('status', {
+      detail: { message, type, timestamp: Date.now() },
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
   async _onEdidDecodeTab() {
     this._activeTab = 'edid-decode';
+
+    // Don't attempt decode if no EDID data
+    if (!this.edidData) {
+      return;
+    }
 
     // Only load if we haven't already
     if (!this._wasmOutput && !this._wasmLoading && !this._wasmError) {
       this._wasmLoading = true;
+      this._emitStatus('Loading edid-decode WASM module...', 'loading');
       try {
         this._wasmOutput = await decodeEdidWasm(this.edidData);
+        this._emitStatus('EDID decoded successfully', 'success');
       } catch (err) {
         console.error('WASM decode error:', err);
         this._wasmError = err.message || 'Failed to decode EDID';
+        this._emitStatus(`WASM decode failed: ${this._wasmError}`, 'error');
       } finally {
         this._wasmLoading = false;
       }

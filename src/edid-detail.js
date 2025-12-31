@@ -72,12 +72,22 @@ export class EdidDetail extends LitElement {
         .githubUrl=${githubUrl}
         ?show-back=${this.mobile}
         @back=${this._onBack}
+        @status=${this._onStatus}
       ></edid-viewer>
     `;
   }
 
   _onBack() {
     this.dispatchEvent(new CustomEvent('back', { bubbles: true, composed: true }));
+  }
+
+  _onStatus(e) {
+    // Re-emit status from edid-viewer
+    this.dispatchEvent(new CustomEvent('status', {
+      detail: e.detail,
+      bubbles: true,
+      composed: true,
+    }));
   }
 }
 
