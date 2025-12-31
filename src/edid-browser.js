@@ -241,7 +241,7 @@ export class EdidBrowser extends LitElement {
       border-top: 2px solid var(--color-accent, #e94560);
       display: flex;
       flex-direction: column;
-      transform: translateY(100%);
+      transform: translateY(calc(100% + 24px));
       transition: transform 0.25s ease-out;
     }
 
