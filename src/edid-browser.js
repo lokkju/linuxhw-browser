@@ -13,6 +13,8 @@ export class EdidBrowser extends LitElement {
   static properties = {
     baseUrl: { type: String, attribute: 'data-base-url' },
     _status: { type: Object, state: true },
+    _statusHistory: { type: Array, state: true },
+    _showStatusLog: { type: Boolean, state: true },
     _selectedEdid: { type: Object, state: true },
     _layoutMode: { type: String, state: true },
     _showDetail: { type: Boolean, state: true },
@@ -204,12 +206,144 @@ export class EdidBrowser extends LitElement {
       color: var(--color-accent, #e94560);
       text-decoration: underline;
     }
+
+    .status-bar {
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .status-bar:hover {
+      background: var(--color-primary, #0f3460);
+    }
+
+    .status-log-overlay {
+      position: absolute;
+      bottom: 24px;
+      left: 0;
+      right: 0;
+      top: 48px;
+      background: rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+
+    .status-log-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .status-log {
+      position: absolute;
+      bottom: 24px;
+      left: 0;
+      right: 0;
+      height: 50%;
+      background: rgba(22, 33, 62, 0.95);
+      border-top: 2px solid var(--color-accent, #e94560);
+      display: flex;
+      flex-direction: column;
+      transform: translateY(100%);
+      transition: transform 0.25s ease-out;
+    }
+
+    .status-log.open {
+      transform: translateY(0);
+    }
+
+    .status-log-header {
+      padding: 0.5rem 1rem;
+      font-size: 0.6875rem;
+      color: var(--color-text-muted, #888);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--color-border, #2a2a4e);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .status-log-close {
+      background: none;
+      border: none;
+      color: var(--color-text-muted, #888);
+      cursor: pointer;
+      font-size: 0.875rem;
+      padding: 0.25rem 0.5rem;
+    }
+
+    .status-log-close:hover {
+      color: var(--color-text, #eee);
+    }
+
+    .status-log-content {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column-reverse;
+    }
+
+    .status-log-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .status-log-item {
+      padding: 0.25rem 1rem;
+      font-size: 0.75rem;
+      font-family: ui-monospace, monospace;
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .status-log-item:nth-child(odd) {
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .status-log-time {
+      color: var(--color-text-muted, #888);
+      flex-shrink: 0;
+    }
+
+    .status-log-type {
+      min-width: 4em;
+      text-transform: uppercase;
+      font-size: 0.625rem;
+    }
+
+    .status-log-msg {
+      color: var(--color-text, #eee);
+      flex: 1;
+    }
+
+    .status-log-item[data-type="error"] .status-log-type,
+    .status-log-item[data-type="error"] .status-log-msg {
+      color: var(--color-accent, #e94560);
+    }
+
+    .status-log-item[data-type="success"] .status-log-type,
+    .status-log-item[data-type="success"] .status-log-msg {
+      color: #4ade80;
+    }
+
+    .status-log-item[data-type="warning"] .status-log-type,
+    .status-log-item[data-type="warning"] .status-log-msg {
+      color: #fbbf24;
+    }
+
+    .status-log-item[data-type="loading"] .status-log-type {
+      color: var(--color-text-muted, #888);
+    }
   `;
 
   constructor() {
     super();
     this.baseUrl = 'data/roaringbuckets/';
     this._status = { message: 'Ready', type: 'info', timestamp: Date.now() };
+    this._statusHistory = [];
+    this._showStatusLog = false;
     this._selectedEdid = null;
     this._layoutMode = 'wide';
     this._showDetail = false;
@@ -289,6 +423,20 @@ export class EdidBrowser extends LitElement {
 
   _onStatus(e) {
     this._status = e.detail;
+    // Add to history (keep last 100 messages)
+    this._statusHistory = [
+      ...this._statusHistory.slice(-99),
+      { ...e.detail, timestamp: e.detail.timestamp || Date.now() },
+    ];
+  }
+
+  _toggleStatusLog() {
+    this._showStatusLog = !this._showStatusLog;
+  }
+
+  _formatTime(timestamp) {
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString('en-US', { hour12: false });
   }
 
   _onEdidSelect(e) {
@@ -351,7 +499,28 @@ export class EdidBrowser extends LitElement {
           ></edid-detail>
         </div>
       </div>
-      <div class="status-bar">
+      <div
+        class="status-log-overlay ${this._showStatusLog ? 'open' : ''}"
+        @click=${this._toggleStatusLog}
+      ></div>
+      <div class="status-log ${this._showStatusLog ? 'open' : ''}">
+        <div class="status-log-header">
+          <span>Status Log (${this._statusHistory.length} messages)</span>
+          <button class="status-log-close" @click=${this._toggleStatusLog}>✕</button>
+        </div>
+        <div class="status-log-content">
+          <ul class="status-log-list">
+            ${this._statusHistory.slice().reverse().map(entry => html`
+              <li class="status-log-item" data-type=${entry.type}>
+                <span class="status-log-time">${this._formatTime(entry.timestamp)}</span>
+                <span class="status-log-type">${entry.type}</span>
+                <span class="status-log-msg">${entry.message}</span>
+              </li>
+            `)}
+          </ul>
+        </div>
+      </div>
+      <div class="status-bar" @click=${this._toggleStatusLog}>
         <span class="status-indicator" data-type=${this._status.type}></span>
         <span class="status-message">${this._status.message}</span>
         <span class="status-source">${this._renderVersionInfo()}</span>
