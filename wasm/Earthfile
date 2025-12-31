@@ -44,13 +44,17 @@ build-optimized:
     GIT CLONE --branch master https://github.com/oe-mirrors/edid-decode.git edid-decode
     WORKDIR /build/edid-decode
 
-    # Copy optimized cross-file, post.js, and patch
+    # Copy optimized cross-file, post.js, and new function
     COPY wasm-crossfile-opt.txt /tmp/wasm-crossfile-opt.txt
     COPY post.js /tmp/post.js
-    COPY edid-decode-buffer.patch /tmp/edid-decode-buffer.patch
+    COPY parse_edid_buffer.cpp /tmp/parse_edid_buffer.cpp
 
-    # Apply patch to add buffer-based entry point
-    RUN patch -p1 < /tmp/edid-decode-buffer.patch
+    # Insert buffer-based entry point before final #endif
+    RUN head -n -1 edid-decode.cpp > /tmp/edid-decode-patched.cpp && \
+        cat /tmp/parse_edid_buffer.cpp >> /tmp/edid-decode-patched.cpp && \
+        echo "" >> /tmp/edid-decode-patched.cpp && \
+        echo "#endif" >> /tmp/edid-decode-patched.cpp && \
+        mv /tmp/edid-decode-patched.cpp edid-decode.cpp
 
     # Configure with optimized settings
     RUN meson setup build-wasm \
