@@ -21,7 +21,7 @@ export function isWasmSupported() {
 
 /**
  * Lazy-load the WASM module.
- * @returns {Promise<object>} Initialized Emscripten module with FS access
+ * @returns {Promise<object>} Initialized Emscripten module with buffer API
  */
 export async function loadWasm() {
   if (wasmModule) return wasmModule;
@@ -125,24 +125,19 @@ export async function decodeEdidWasm(edidData) {
   wrapper.resetCapture();
 
   try {
-    // Write EDID to virtual filesystem
-    const FS = Module.FS || window.FS;
-    if (!FS) {
-      throw new Error('Emscripten FS not available');
+    // Get buffer pointer and size from WASM
+    const bufferPtr = Module._get_edid_buffer();
+    const bufferSize = Module._get_edid_buffer_size();
+
+    if (edidData.length > bufferSize) {
+      throw new Error(`EDID data too large: ${edidData.length} > ${bufferSize}`);
     }
 
-    const inputPath = '/input.bin';
-    FS.writeFile(inputPath, edidData);
+    // Copy EDID data directly to WASM memory
+    Module.HEAPU8.set(edidData, bufferPtr);
 
-    // Call parse_edid
-    Module.ccall('parse_edid', 'number', ['string'], [inputPath]);
-
-    // Clean up
-    try {
-      FS.unlink(inputPath);
-    } catch (e) {
-      // Ignore cleanup errors
-    }
+    // Call parse_edid_buffer with the data length
+    const result = Module._parse_edid_buffer(edidData.length);
 
     // Get output
     let output = wrapper.getOutput();
@@ -151,6 +146,10 @@ export async function decodeEdidWasm(edidData) {
     // Combine output and errors
     if (errors && errors.trim()) {
       output += '\n--- Warnings/Errors ---\n' + errors;
+    }
+
+    if (result !== 0 && !output.trim()) {
+      throw new Error('EDID decode failed');
     }
 
     return output.trim() || '(no output)';

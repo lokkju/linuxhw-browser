@@ -56,6 +56,10 @@ build-optimized:
         echo "#endif" >> /tmp/edid-decode-patched.cpp && \
         mv /tmp/edid-decode-patched.cpp edid-decode.cpp
 
+    # Patch meson.build to export our buffer functions (overrides upstream defaults)
+    RUN sed -i "s/-sEXPORTED_FUNCTIONS=_parse_edid/-sEXPORTED_FUNCTIONS=[\"_parse_edid_buffer\",\"_get_edid_buffer\",\"_get_edid_buffer_size\"]/" meson.build && \
+        sed -i "s/-sEXPORTED_RUNTIME_METHODS=ccall,cwrap/-sEXPORTED_RUNTIME_METHODS=[\"ccall\"]/" meson.build
+
     # Configure with optimized settings
     RUN meson setup build-wasm \
         --cross-file /tmp/wasm-crossfile-opt.txt \

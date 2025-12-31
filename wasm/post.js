@@ -1,2 +1,1 @@
-// Expose FS on Module for external access
-Module["FS"] = FS;
+// No-op post script for buffer-based API (no filesystem)
