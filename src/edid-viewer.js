@@ -151,6 +151,46 @@ export class EdidViewer extends LitElement {
       text-shadow: 0 0 8px var(--color-accent, #e94560);
     }
 
+    .tab-content {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      min-width: 100%;
+    }
+
+    .tab-label {
+      text-align: center;
+    }
+
+    .tab-progress-bar {
+      display: block;
+      width: 100%;
+      height: 2px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 1px;
+      overflow: hidden;
+      margin-top: 3px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .tab-progress-bar.loading,
+    .tab-progress-bar.loaded {
+      opacity: 1;
+    }
+
+    .tab-progress-fill {
+      display: block;
+      height: 100%;
+      background: var(--color-accent, #e94560);
+      transition: width 0.2s ease-out, background 0.2s;
+      border-radius: 1px;
+    }
+
+    .tab-progress-bar.loaded .tab-progress-fill {
+      background: #4ade80;
+    }
+
     .content {
       flex: 1;
       min-height: 0;
@@ -475,24 +515,6 @@ export class EdidViewer extends LitElement {
       color: var(--color-text-muted, #888);
     }
 
-    .tab-badge {
-      display: inline-block;
-      padding: 0.125rem 0.25rem;
-      background: var(--color-text-muted, #888);
-      color: white;
-      font-size: 0.5rem;
-      border-radius: 2px;
-      margin-left: 0.25rem;
-      text-transform: uppercase;
-      vertical-align: middle;
-      position: relative;
-      top: -1px;
-      transition: background 0.2s;
-    }
-
-    .tab-badge[data-loaded] {
-      background: #4ade80;
-    }
   `;
 
   constructor() {
@@ -621,7 +643,14 @@ export class EdidViewer extends LitElement {
               class="tab"
               data-active=${this._activeTab === 'edid-decode'}
               @click=${() => this._onEdidDecodeTab()}
-            >edid-decode<span class="tab-badge" ?data-loaded=${!!this._wasmOutput}>wasm</span></button>
+            >
+              <span class="tab-content">
+                <span class="tab-label">edid-decode</span>
+                <span class="tab-progress-bar ${this._wasmLoading ? 'loading' : ''} ${this._wasmOutput ? 'loaded' : ''}">
+                  <span class="tab-progress-fill" style="width: ${this._wasmOutput ? 100 : (this._wasmLoading ? 50 : 0)}%"></span>
+                </span>
+              </span>
+            </button>
           ` : ''}
         </div>
       </div>
