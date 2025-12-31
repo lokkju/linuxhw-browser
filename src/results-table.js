@@ -40,6 +40,7 @@ export class ResultsTable extends LitElement {
     :host {
       display: block;
       height: 100%;
+      padding: 0 0.5rem;
     }
 
     .loading, .empty {

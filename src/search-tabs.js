@@ -62,16 +62,9 @@ export class SearchTabs extends LitElement {
 
     .tab[data-active="true"] {
       color: var(--color-text, #eee);
-    }
-
-    .tab[data-active="true"]::after {
-      content: '';
-      position: absolute;
-      bottom: -9px;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background: var(--color-accent, #e94560);
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 4px;
+      text-shadow: 0 0 8px var(--color-accent, #e94560);
     }
 
     .tab-content {
@@ -89,11 +82,11 @@ export class SearchTabs extends LitElement {
     .tab-progress-bar {
       display: block;
       width: 100%;
-      height: 3px;
-      background: rgba(255, 255, 255, 0.15);
-      border-radius: 2px;
+      height: 2px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 1px;
       overflow: hidden;
-      margin-top: 4px;
+      margin-top: 3px;
       opacity: 0;
       transition: opacity 0.2s;
     }
