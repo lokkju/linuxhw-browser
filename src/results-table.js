@@ -39,8 +39,14 @@ export class ResultsTable extends LitElement {
   static styles = css`
     :host {
       display: block;
-      height: 100%;
-      padding: 0 0.5rem;
+      flex: 1;
+      min-height: 0;
+      border: 1px solid var(--color-border, #2a2a4e);
+      border-radius: var(--radius, 4px);
+      background: var(--color-surface, #16213e);
+      overflow-y: auto;
+      overflow-x: hidden;
+      margin-bottom: 0.75rem;
     }
 
     .loading, .empty {

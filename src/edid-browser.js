@@ -254,6 +254,12 @@ export class EdidBrowser extends LitElement {
         this._manifest = {
           totalCount: manifest?.totalCount || manifest?.total_entries,
           version: manifest?.version,
+          data_version: manifest?.data_version,
+          built_at: manifest?.built_at,
+          upstream: manifest?.upstream && {
+            date: manifest?.upstream?.date,
+            commit: manifest?.upstream?.commit,
+          },
         };
       }
     } catch (err) {
@@ -296,10 +302,20 @@ export class EdidBrowser extends LitElement {
   }
 
   _renderVersionInfo() {
-    if (!this._manifest?.version) {
-      return html`<a href="https://github.com/lokkju/linuxhw-datasets" target="_blank">linuxhw-datasets</a>`;
+    if (!this._manifest?.data_version) {
+      return html`
+        <span>Data:&nbsp;</span>
+        <a href="https://github.com/lokkju/linuxhw-datasets" target="_blank">lokkju/linuxhw-datasets</a>
+        &nbsp;|&nbsp;
+        <a href="https://github.com/linuxhw/EDID" target="_blank">linuxhw/EDID</a>
+        `;
     }
-    return html`<a href="https://github.com/lokkju/linuxhw-datasets" target="_blank">linuxhw-datasets v${this._manifest.version}</a>`;
+    return html`
+        <span>Data:&nbsp;</span>
+        <a href="https://github.com/lokkju/linuxhw-datasets" target="_blank">lokkju/linuxhw-datasets @ ${this._manifest.built_at}</a>
+        &nbsp;|&nbsp;
+        <a href="https://github.com/linuxhw/EDID" target="_blank">linuxhw/EDID @ ${this._manifest.upstream.date}-${this._manifest.upstream.commit}</a>
+        `;
   }
 
   _formatCount(count) {
@@ -314,7 +330,7 @@ export class EdidBrowser extends LitElement {
       <div class="header">
         <h1>EDID Browser</h1>
         ${count ? html`<span class="count">${this._formatCount(count)} EDIDs</span>` : ''}
-        <a href="https://github.com/lokkju/linuxhw-datasets" target="_blank" class="project-link">linuxhw-datasets</a>
+        <a href="https://github.com/lokkju/linuxhw-browser" target="_blank" class="project-link">lokkju/linuxhw-browser</a>
       </div>
       <div class="main-content">
         <div class="selector-section">

@@ -36,14 +36,17 @@ export class EdidSelector extends LitElement {
     .search-section {
       padding: 0.75rem 1rem;
       background: var(--color-surface, #16213e);
-      border-bottom: 1px solid var(--color-border, #2a2a4e);
       flex-shrink: 0;
     }
 
     .results-section {
       flex: 1;
       min-height: 0;
-      overflow-y: auto;
+      overflow: hidden;
+      padding: 0.75rem 1rem;
+      display: flex;
+      flex-direction: column;
+      background: var(--color-surface, #16213e);
     }
   `;
 
