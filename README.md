@@ -93,6 +93,35 @@ import { BucketLoader, IndexLoader } from 'linuxhw-browser';
 | EdidSelector | `<edid-selector>` | Search interface component |
 | EdidDetail | `<edid-detail>` | Detail panel wrapper |
 
+## Theming
+
+Components use CSS custom properties for theming. Define these in your `:root` or a parent element:
+
+```css
+:root {
+  /* Base colors */
+  --color-bg: #1a1a2e;
+  --color-surface: #16213e;
+  --color-primary: #0f3460;
+  --color-accent: #e94560;
+  --color-text: #eee;
+  --color-text-muted: #888;
+  --color-border: #2a2a4e;
+
+  /* Status colors */
+  --color-success: #4ade80;
+  --color-warning: #fbbf24;
+
+  /* Overlay colors */
+  --color-overlay-light: rgba(255, 255, 255, 0.08);
+  --color-overlay-medium: rgba(255, 255, 255, 0.1);
+  --color-overlay-dark: rgba(0, 0, 0, 0.2);
+  --color-overlay-heavy: rgba(0, 0, 0, 0.5);
+
+  --radius: 4px;
+}
+```
+
 ## Quick Start (Development)
 
 ```bash
