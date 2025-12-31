@@ -276,8 +276,6 @@ export class EdidBrowser extends LitElement {
     .status-log-content {
       flex: 1;
       overflow-y: auto;
-      display: flex;
-      flex-direction: column-reverse;
     }
 
     .status-log-list {
@@ -506,7 +504,7 @@ export class EdidBrowser extends LitElement {
         </div>
         <div class="status-log-content">
           <ul class="status-log-list">
-            ${this._statusHistory.slice().reverse().map(entry => html`
+            ${this._statusHistory.map(entry => html`
               <li class="status-log-item" data-type=${entry.type}>
                 <span class="status-log-time">${this._formatTime(entry.timestamp)}</span>
                 <span class="status-log-type">${entry.type}</span>
